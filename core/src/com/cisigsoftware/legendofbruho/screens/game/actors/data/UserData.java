@@ -2,7 +2,7 @@
  * Copyright 2015 CISIG Software Labs Inc.
  * All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game.actors.enums;
+package com.cisigsoftware.legendofbruho.screens.game.actors.data;
 
 /**
  * @author kg
@@ -13,10 +13,6 @@ public abstract class UserData {
   protected UserDataType dataType;
   protected float width;
   protected float height;
-  
-  public UserData() {
-    
-  }
   
   public UserData(float width, float height) {
     this.width = width;

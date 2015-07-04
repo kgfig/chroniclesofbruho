@@ -14,7 +14,7 @@ import com.cisigsoftware.legendofbruho.screens.game.GameStage;
  *
  */
 public class GameScreen implements Screen {
-
+  
   protected GameStage stage;
   
   public GameScreen() {
