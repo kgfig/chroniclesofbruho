@@ -4,243 +4,134 @@
 package com.cisigsoftware.legendofbruho.screens.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.cisigsoftware.legendofbruho.screens.game.actors.Enemy;
-import com.cisigsoftware.legendofbruho.screens.game.actors.Ground;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
+import com.cisigsoftware.legendofbruho.screens.game.actors.Block;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Hero;
-import com.cisigsoftware.legendofbruho.screens.game.actors.data.EnemyData;
-import com.cisigsoftware.legendofbruho.screens.game.actors.data.GroundData;
-import com.cisigsoftware.legendofbruho.screens.game.actors.data.HeroData;
-import com.cisigsoftware.legendofbruho.screens.game.actors.data.UserData;
-import com.cisigsoftware.legendofbruho.screens.game.actors.data.UserDataType;
 
 /**
  * @author kg
  *
  */
-public class GameStage extends WorldStage implements ContactListener {
+public class GameStage extends Stage {
 
-  public static final int CAMERA_OFFSET_PX = 320;
-  private Ground ground;
+  static final float WORLD_WIDTH = 16f;
+  static final float WORLD_HEIGHT = 9f;
+
+  private Array<Block> blocks;
   private Hero hero;
-  private Enemy enemy;
+  private GameController controller;
+  private OrthographicCamera camera;
 
-  private Box2DDebugRenderer renderer;
-
-  /**
-   * Initialize world in stage
-   */
   public GameStage() {
     super();
-    setupWorld();
-    setupCamera();
 
-    renderer = new Box2DDebugRenderer();
+    createActors();
+    setCameraViewport();
+    addActors();
+    controller = new GameController();
+    Gdx.input.setInputProcessor(this);
+  }
+
+  /**
+   * Create the hero and world blocks
+   */
+  private void createActors() {
+    // create our hero
+    hero = new Hero(new Vector2(WORLD_WIDTH - 3, 2));
+
+    // create the terrain
+    blocks = new Array<Block>();
+    int rightMostX = (int) WORLD_WIDTH - 1;
+    int middleX = (int) WORLD_WIDTH / 2;
+
+    // build the ground and ceiling
+    for (int i = 0; i < (int) WORLD_WIDTH; i++) {
+      blocks.add(new Block(new Vector2(i, 0)));
+      blocks.add(new Block(new Vector2(i, (int) WORLD_HEIGHT - 1)));
+      if (i > 2)
+        blocks.add(new Block(new Vector2(i, 1)));
+    }
+
+    // build the right wall
+    for (int i = 0; i < (int) WORLD_HEIGHT - 1; i++) {
+      blocks.add(new Block(new Vector2(rightMostX, i)));
+    }
+
+    // build middle wall with passage at the bottom
+    for (int i = 3; i < (int) WORLD_HEIGHT - 1; i++) {
+      blocks.add(new Block(new Vector2(middleX, i)));
+    }
+  }
+
+  /**
+   * Set the camera viewport
+   */
+  private void setCameraViewport() {
+    camera = new OrthographicCamera(WORLD_WIDTH, WORLD_HEIGHT);
+    camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
+    camera.update();
+    getViewport().setCamera(camera);
+  }
+
+  /**
+   * Add the world and hero to the stage
+   */
+  private void addActors() {
+    hero.setDebug(true);
+    addActor(hero);
+
+    for (Block block : blocks) {
+      block.setDebug(true);
+      addActor(block);
+    }
+  }
+
+  @Override
+  public boolean keyDown(int keyCode) {
+    if (keyCode == Keys.DPAD_LEFT)
+      controller.leftPressed();
+    if (keyCode == Keys.DPAD_RIGHT)
+      controller.rightPressed();
+    if (keyCode == Keys.Z)
+      controller.jumpPressed();
+    if (keyCode == Keys.X)
+      controller.firePressed();
+    return true;
+
+  }
+
+  @Override
+  public boolean keyUp(int keyCode) {
+    if (keyCode == Keys.DPAD_LEFT)
+      controller.leftReleased();
+    if (keyCode == Keys.DPAD_RIGHT)
+      controller.rightReleased();
+    if (keyCode == Keys.Z)
+      controller.jumpReleased();
+    if (keyCode == Keys.X)
+      controller.fireReleased();
+    return true;
   }
 
   @Override
   public void act(float delta) {
     super.act(delta);
-
-    Vector2 enemyPos = enemy.getBodyPosition();
-    Vector2 heroPos = hero.getBodyPosition();
-    Gdx.app.log("GameStage", String.format("Hero(x)=(%2f)", heroPos.x) + "\t" + String.format("Enemy(x,y)=(%2f,%2f)", enemyPos.x, enemyPos.y));
-
-    if (enemy.isNear(hero) && !enemy.isAttacking() && !enemy.isBouncing()) {
-      Gdx.app.log("GameStage", "Hero is near. bouncing? " + enemy.isBouncing());
-      enemy.attack();
-    }
     
-  }
-
-  @Override
-  public void draw() {
-    super.draw();
-
-    // Follow the hero by setting the camera to the position of the Hero, offset by 10m (320px) to
-    // his right
-    camera.position.x = hero.getBodyPosition().x + (CAMERA_OFFSET_PX / PPM);
-    camera.update();
-
-//    int numContacts = world.getContactCount();
-//    if (numContacts > 0) {
-//      Gdx.app.log("contact", "start of contact list");
-//      for (Contact contact : world.getContactList()) {
-//        UserData userDataA = (UserData) contact.getFixtureA().getBody().getUserData();
-//        UserData userDataB = (UserData) contact.getFixtureB().getBody().getUserData();
-//        Gdx.app.log("contact",
-//            "between " + userDataA.getDataType() + " and " + userDataB.getDataType());
-//      }
-//      Gdx.app.log("contact", "end of contact list");
-//    }
-
-    renderer.render(world, camera.combined);
-  }
-  
-  @Override
-  public void beginContact(Contact contact) {
-    Gdx.app.log("ContactListener", "Contact!");
-    Body a = contact.getFixtureA().getBody();
-    Body b = contact.getFixtureB().getBody();
-
-    // TODO get the actual enemy actor before checking for bouncing and deletion
-    if (enemy.isBouncing() && enemyOnGround(a, b)) {
-      Gdx.app.log("ContactListener", "Enemy landed!");
-      enemy.landed();
+    if (controller.isLeftPressed()) {
+      hero.walkLeft();
     }
 
-    if (enemyHitsHero(a,b) && !hero.isHit()) {
-      Gdx.app.log("ContactListener", "Hero is hit!");
-      hero.hit();
-      Gdx.app.log("ContactListener", "Remove enemy from world");
-      deletionList.add(enemy);
+    if (controller.isRightPressed()) {
+      hero.walkRight();
+    }
+
+    if ((controller.isLeftPressed() && controller.isRightPressed())
+        || (!controller.isLeftPressed() && !controller.isRightPressed())) {
+      hero.stand();
     }
   }
-
-  @Override
-  public void endContact(Contact contact) {
-
-  }
-
-  @Override
-  public void preSolve(Contact contact, Manifold oldManifold) {
-
-  }
-
-  @Override
-  public void postSolve(Contact contact, ContactImpulse impulse) {
-
-  }
-
-  /**
-   * Creates the world and the bodies for the game actors
-   */
-  private void setupWorld() {
-    world = createWorld(GRAVITY);
-
-    world.setContactListener(this);
-    ground = createGround();
-    hero = createHero();
-    enemy = createEnemy();
-
-    // Add actors
-    addActor(ground);
-    addActor(hero);
-    addActor(enemy);
-  }
-
-  /**
-   * Creates the ground with a static body
-   * 
-   * @return ground actor
-   */
-  private Ground createGround() {
-    Body body = createStaticBody(Ground.X, Ground.Y, Ground.WIDTH, Ground.HEIGHT, Ground.DENSITY);
-    body.setUserData(new GroundData(Ground.WIDTH, Ground.HEIGHT));
-    return new Ground(body);
-  }
-
-  /**
-   * Creates a hero with a dynamic body
-   * 
-   * @return hero actor
-   */
-  private Hero createHero() {
-    Body body = createDynamicBody(Hero.X, Hero.Y, Hero.WIDTH, Hero.HEIGHT, Hero.DENSITY);
-    body.setUserData(new HeroData(Hero.WIDTH, Hero.HEIGHT));
-    return new Hero(body);
-  }
-
-  /**
-   * Creates an enemy with a kinematic body
-   * 
-   * @return enemy actor
-   */
-  private Enemy createEnemy() {
-    Body body = createDynamicBody(Enemy.X, Enemy.Y, Enemy.WIDTH, Enemy.HEIGHT, Enemy.DENSITY);
-    body.setUserData(new EnemyData(Enemy.WIDTH, Enemy.HEIGHT));
-    return new Enemy(body);
-  }
-  
-  /**
-   * Returns true if the bodies in contact are that of the enemy and the ground
-   * 
-   * @param a
-   * @param b
-   * @return true if the bodies in contact are that of the enemy and the ground
-   */
-  public static boolean enemyOnGround(Body a, Body b) {
-    boolean cond1 = (isGround(a) && isEnemy(b));
-    Gdx.app.log("ContactHandler", "cond1=" + cond1);
-
-    boolean cond2 = (isEnemy(a) && isGround(b));
-    Gdx.app.log("ContactHandler", "cond2=" + cond2);
-
-    return (cond1 || cond2);
-  }
-  
-  /**
-   * Returns true if the bodies in contact are that of the enemy and the hero
-   * @param a
-   * @param b
-   * @return true if the bodies in contact are that of the enemy and the hero
-   */
-  public static boolean enemyHitsHero(Body a, Body b) {
-    boolean cond1 = (isHero(a) && isEnemy(b));
-    Gdx.app.log("ContactHandler", "cond1=" + cond1);
-    
-    boolean cond2 = (isEnemy(a) && isHero(b));
-    Gdx.app.log("ContactHandler", "cond2=" + cond2);
-    
-    return (cond1 || cond2);
-  }
-
-  /**
-   * Returns true if the user data type given is of
-   * 
-   * @param body the body
-   */
-  public static boolean isGround(Body body) {
-    UserData userData = (UserData) body.getUserData();
-    Gdx.app.log("GameStage", "Is ground? " + userData.getDataType());
-    return userData.getDataType() == UserDataType.GROUND;
-  }
-
-  /**
-   * Returns true if the user data type given is of
-   * 
-   * @param body the body
-   */
-  public static boolean isHero(Body body) {
-    UserData userData = (UserData) body.getUserData();
-    Gdx.app.log("GameStage", "Is hero? " + userData.getDataType());
-    return userData.getDataType() == UserDataType.HERO;
-  }
-
-  /**
-   * Returns true if the user data type given is of
-   * 
-   * @param body the body
-   */
-  public static boolean isEnemy(Body body) {
-    UserData userData = (UserData) body.getUserData();
-    Gdx.app.log("GameStage", "Is enemy? " + userData.getDataType());
-    return userData.getDataType() == UserDataType.ENEMY;
-  }
-
-  /**
-   * Returns the enemy game actor
-   * 
-   * @return the enemy
-   */
-  public Enemy getEnemy() {
-    return enemy;
-  }
-
 }

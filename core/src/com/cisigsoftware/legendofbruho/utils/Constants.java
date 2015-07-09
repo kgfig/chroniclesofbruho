@@ -10,6 +10,6 @@ package com.cisigsoftware.legendofbruho.utils;
  */
 public class Constants {
 
-  public final static int SCREEN_WIDTH = 1280;
-  public final static int SCREEN_HEIGHT = 704;
+  public static final int SCREEN_WIDTH = 1280;
+  public static final int SCREEN_HEIGHT = 720;
 }
