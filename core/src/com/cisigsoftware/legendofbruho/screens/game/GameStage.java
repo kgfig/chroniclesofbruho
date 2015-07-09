@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Block;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Hero;
+import com.cisigsoftware.legendofbruho.screens.game.utils.HeroController;
 
 /**
  * @author kg
@@ -18,13 +19,18 @@ import com.cisigsoftware.legendofbruho.screens.game.actors.Hero;
  */
 public class GameStage extends Stage {
 
-  static final float WORLD_WIDTH = 16f;
-  static final float WORLD_HEIGHT = 9f;
+  public static final float WORLD_WIDTH = 16f;
+  public static final float WORLD_HEIGHT = 9f;
+  private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 150ms
 
   private Array<Block> blocks;
   private Hero hero;
-  private GameController controller;
+
   private OrthographicCamera camera;
+  private HeroController controller;
+  private long jumpingPressedTime;
+  private boolean jumpingPressed;
+
 
   public GameStage() {
     super();
@@ -32,7 +38,7 @@ public class GameStage extends Stage {
     createActors();
     setCameraViewport();
     addActors();
-    controller = new GameController();
+    controller = new HeroController();
     Gdx.input.setInputProcessor(this);
   }
 
@@ -84,10 +90,10 @@ public class GameStage extends Stage {
     hero.setDebug(true);
     addActor(hero);
 
-    for (Block block : blocks) {
-      block.setDebug(true);
-      addActor(block);
-    }
+    // for (Block block : blocks) {
+    // block.setDebug(true);
+    // addActor(block);
+    // }
   }
 
   @Override
@@ -110,8 +116,11 @@ public class GameStage extends Stage {
       controller.leftReleased();
     if (keyCode == Keys.DPAD_RIGHT)
       controller.rightReleased();
-    if (keyCode == Keys.Z)
+    if (keyCode == Keys.Z) {
       controller.jumpReleased();
+      jumpingPressed = false;
+      Gdx.app.log("GameStage", "Jump released! jumping?" + jumpingPressed);
+    }
     if (keyCode == Keys.X)
       controller.fireReleased();
     return true;
@@ -120,18 +129,42 @@ public class GameStage extends Stage {
   @Override
   public void act(float delta) {
     super.act(delta);
-    
+
+    if (controller.isJumpPressed()) {
+      Gdx.app.log("GameStage", "Jump pressed! jumping?" + jumpingPressed);
+      if (!hero.isJumping()) {
+        Gdx.app.log("GameStage", "Make hero jump!");
+        jumpingPressed = true;
+        jumpingPressedTime = System.currentTimeMillis();
+        hero.jump();
+      } else {
+        Gdx.app.log("GameStage", "Hero is still jumping.");
+        long pressedDuration = System.currentTimeMillis() - jumpingPressedTime;
+
+        if (jumpingPressed && pressedDuration >= LONG_JUMP_PRESS) {
+          jumpingPressed = false;
+        } else if (jumpingPressed) {
+          hero.propelUp();
+        }
+      }
+    }
+
     if (controller.isLeftPressed()) {
-      hero.walkLeft();
+      if (!hero.isJumping())
+        hero.walkLeft();
+      else
+        hero.moveLeft();
+    } else if (controller.isRightPressed()) {
+      if (!hero.isJumping())
+        hero.walkRight();
+      else
+        hero.moveRight();
+    } else {
+      if (!hero.isJumping()) {
+        hero.stand();
+      }
+      hero.stopWalking();
     }
 
-    if (controller.isRightPressed()) {
-      hero.walkRight();
-    }
-
-    if ((controller.isLeftPressed() && controller.isRightPressed())
-        || (!controller.isLeftPressed() && !controller.isRightPressed())) {
-      hero.stand();
-    }
   }
 }
