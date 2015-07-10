@@ -23,6 +23,7 @@ import com.cisigsoftware.legendofbruho.screens.game.utils.HeroController;
 public class GameStage extends Stage {
 
   public static final float WORLD_WIDTH = 16f;
+  public static final float WORLD_HALF = WORLD_WIDTH / 2f;
   public static final float WORLD_HEIGHT = 9f;
   private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 150ms
 
@@ -69,7 +70,7 @@ public class GameStage extends Stage {
    * Creates the current level
    */
   private void createLevel() {
-    level = new Level((int) WORLD_WIDTH, (int) WORLD_HEIGHT);
+    level = new Level((int) WORLD_WIDTH * 2, (int) WORLD_HEIGHT);
     Block[][] blocks = level.getBlocks();
 
     for (Block[] blockCol : blocks) {
@@ -79,41 +80,6 @@ public class GameStage extends Stage {
           addActor(block);
         }
       }
-    }
-  }
-
-  /**
-   * Returns the blocks that are in the camera’s window and will be rendered
-   * 
-   * @param width
-   * @param height
-   */
-  public void getDrawableBlocks(int width, int height) {
-    int x = (int) hero.getX() - width;
-    int y = (int) hero.getY() - height;
-
-    // Clamp left x to 0
-    if (x < 0)
-      x = 0;
-
-    // Clamp bottom y to 0
-    if (y < 0)
-      y = 0;
-
-    int x2 = x + 2 * width;
-    int y2 = y + 2 * height;
-
-    Gdx.app.log("GameStage",
-        "Hero.x=" + hero.getX() + "\tDrawable.x1=" + x + "\tDrawable.x2=" + x2);
-
-    // Clamp right x to the level width
-    if (x2 >= level.getWidth()) {
-      x2 = level.getWidth() - 1;
-    }
-
-    // Clamp top y to the level height
-    if (y2 >= level.getHeight()) {
-      y2 = level.getHeight() - 1;
     }
   }
 
@@ -150,7 +116,6 @@ public class GameStage extends Stage {
     if (keyCode == Keys.Z) {
       controller.jumpReleased();
       jumpingPressed = false;
-      Gdx.app.log("GameStage", "Jump released! jumping?" + jumpingPressed);
     }
     if (keyCode == Keys.X)
       controller.fireReleased();
@@ -200,6 +165,32 @@ public class GameStage extends Stage {
   public void draw() {
     super.draw();
 
+    // Keep the hero inside the current level
+    
+    if (hero.getX() < 0) {
+      hero.resetX();
+    }
+
+    if (hero.getY() < 0) {
+      hero.resetY();
+    }
+
+    float rightX = level.getWidth() - hero.getBounds().getWidth();
+    
+    if (hero.getX() > rightX) {
+      hero.setX(rightX);
+
+      if (!hero.isJumping())
+        hero.stand();
+    }
+
+    // Set camera to follow the hero's movement
+    if (hero.getX() + WORLD_HALF < level.getWidth() && hero.getX() - WORLD_HALF >= 0)
+      camera.position.x = hero.getX();
+
+    camera.update();
+
+    // Draw collision boxes for debugging
     drawCollisionBoxes();
   }
 
@@ -212,6 +203,39 @@ public class GameStage extends Stage {
       debugRenderer.rect(rect.x, rect.y, rect.width, rect.height);
     }
     debugRenderer.end();
+  }
+
+
+  /**
+   * Returns the blocks that are in the camera’s window and will be rendered
+   * 
+   * @param width
+   * @param height
+   */
+  public void getDrawableBlocks(int width, int height) {
+    int x = (int) hero.getX() - width;
+    int y = (int) hero.getY() - height;
+
+    // Clamp left x to 0
+    if (x < 0)
+      x = 0;
+
+    // Clamp bottom y to 0
+    if (y < 0)
+      y = 0;
+
+    int x2 = x + 2 * width;
+    int y2 = y + 2 * height;
+
+    // Clamp right x to the level width
+    if (x2 >= level.getWidth()) {
+      x2 = level.getWidth() - 1;
+    }
+
+    // Clamp top y to the level height
+    if (y2 >= level.getHeight()) {
+      y2 = level.getHeight() - 1;
+    }
   }
 
   /**

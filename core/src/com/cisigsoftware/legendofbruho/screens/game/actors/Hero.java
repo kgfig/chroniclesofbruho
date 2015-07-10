@@ -3,7 +3,6 @@
  */
 package com.cisigsoftware.legendofbruho.screens.game.actors;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -81,21 +80,6 @@ public class Hero extends GameActor {
   public void draw(Batch batch, float parentAlpha) {
     super.draw(batch, parentAlpha);
 
-    // Keep the hero inside the world
-    if (getX() < 0) {
-      resetX();
-    }
-
-    if (getY() < 0) {
-      resetY();
-    }
-
-    if (getX() > GameStage.WORLD_WIDTH - bounds.getWidth()) {
-      setX(GameStage.WORLD_WIDTH - bounds.getWidth());
-
-      if (!isJumping())
-        stand();
-    }
   }
 
   private void initPhysicsSettings() {
@@ -147,7 +131,6 @@ public class Hero extends GameActor {
     // If he collides, stop his x-velocity to 0
     for (Block block : collidable) {
       if (block != null && block.collidesBeside(heroBox)) {
-        Gdx.app.log("Hero", "Collidable block " + block.getX() + "," + block.getY());
         stopMoving();
         stage.addCollisionBox(block.getBounds());
         break;
@@ -204,7 +187,7 @@ public class Hero extends GameActor {
   /**
    * Keeps him inside the world and resets the jumping state
    */
-  private void resetX() {
+  public void resetX() {
     setX(0);
 
     if (!isJumping())
@@ -214,7 +197,7 @@ public class Hero extends GameActor {
   /**
    * Keeps him inside the world and resets the jumping state
    */
-  private void resetY() {
+  public void resetY() {
     setY(0);
 
     if (isJumping())
