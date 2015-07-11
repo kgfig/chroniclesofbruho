@@ -19,6 +19,7 @@ import com.cisigsoftware.legendofbruho.screens.game.actors.Hero;
  */
 public class GameStage extends Stage {
 
+  private static final String TAG = GameStage.class.getSimpleName(); 
   public static final float WORLD_WIDTH = 16f;
   public static final float WORLD_HALF = WORLD_WIDTH / 2f;
   public static final float WORLD_HEIGHT = 9f;
@@ -131,13 +132,13 @@ public class GameStage extends Stage {
   public void act(float delta) {
     super.act(delta);
     
-//    for (Enemy enemy : enemies) {
-//      if (enemy.getX() >= camera.position.x - WORLD_HALF && enemy.getX() <= camera.position.x + WORLD_HALF) {
-//        enemy.setStateMoving();
-//      } else {
-//        enemy.setStateIdle();
-//      }
-//    }
+    for (Enemy enemy : enemies) {
+      if (enemy.getX() >= camera.position.x - WORLD_HALF && enemy.getX() <= camera.position.x + WORLD_HALF && !enemy.isStateMoving()) {
+        enemy.setStateMoving();
+      } else {
+        enemy.setStateIdle();
+      }
+    }
     
     if (controller.isJumpPressed()) {
       if (!hero.isJumping()) {

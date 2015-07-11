@@ -4,6 +4,7 @@
 package com.cisigsoftware.legendofbruho.screens.game.actors;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.cisigsoftware.legendofbruho.screens.game.Level;
 
@@ -11,12 +12,18 @@ import com.cisigsoftware.legendofbruho.screens.game.Level;
  * @author kg
  *
  */
-public class Hero extends GameActor {
+public class Hero extends PhysicsActor {
+
+  private static final String TAG = Hero.class.getSimpleName();
+
+  private static final float GRAVITY = -20f; // gravity acceleration
 
   private enum State {
     IDLE, WALKING, JUMPING, DYING
   }
 
+  private static final float MAX_VEL = 5f; // maximum velocity for movement along horizontal axis
+                                           // while walking or running
   private static final float ACCELERATION = 20f; // for walking and running
   private static final float MAX_JUMP_SPEED = 7f; // terminal and maximum velocity when jumping
   private static final float SIZE = 0.5f;
@@ -27,25 +34,110 @@ public class Hero extends GameActor {
     super(level, position.x, position.y, SIZE, SIZE);
 
     state = State.IDLE;
+    setGravity(GRAVITY);
+    setMaxVel(MAX_VEL);
   }
 
   @Override
   public void act(float delta) {
+    acceleration.y = gravity;
+
     super.act(delta);
 
     if (isGrounded() && isJumping())
       idle();
   }
-  
+
   @Override
   public void draw(Batch batch, float parentAlpha) {
     super.draw(batch, parentAlpha);
-    
+
     float rightX = level.getWidth() - bounds.getWidth();
-    
+
     if (getX() > rightX && !isJumping()) {
-        idle();
+      idle();
     }
+  }
+
+  @Override
+  protected void checkCollisionWithBlocks(float delta) {
+    int startX, endX, startY, endY;
+
+    // scale velocity to the frame
+    velocity.scl(delta);
+
+    /*
+     * Check for collision along the x-axis
+     */
+    startY = (int) bounds.y;
+    endY = (int) (bounds.y + bounds.height);
+
+    // If he is moving to the left, check if he collides with the block to the left
+    if (velocity.x < 0)
+      startX = (int) Math.floor(bounds.x + velocity.x);
+    else // check if he collides with the block to the right
+      startX = (int) Math.floor(bounds.x + bounds.width + velocity.x);
+
+    endX = startX;
+
+    // Get the candidate blocks for collision
+    collidable = level.getCollidableBlocks(collidable, startX, startY, endX, endY);
+
+    // Create a copy of hero's bounds and set it to his future position based on his velocity
+    Rectangle box = rectPool.obtain();
+    box.x = box.x + velocity.x;
+
+    // If he collides, stop his x-velocity to 0
+    for (Block block : collidable) {
+      if (block != null && block.collidesBeside(box)) {
+        velocity.x = 0;
+        break;
+      }
+    }
+
+    // Then reset his collision box to his current position
+    box.x = getX();
+
+    /**
+     * Check for collision in the y-axis
+     */
+    startX = (int) bounds.x;
+    endX = (int) (bounds.x + bounds.width);
+
+    // If he is standing or falling, check if he collides with the block below
+    if (velocity.y < 0)
+      startY = (int) Math.floor(bounds.y + velocity.y);
+    else // otherwise check the block above
+      startY = (int) Math.floor(bounds.y + bounds.height + velocity.y);
+
+    endY = startY;
+
+    // Get the candidate blocks for collision
+    collidable = level.getCollidableBlocks(collidable, startX, startY, endX, endY);
+
+    // Create a copy of hero's bounds and set it to his future position based on his velocity
+    box.y = box.y + velocity.y;
+
+    // If he collides, set his y-velocity to 0 and set grounded to true
+    for (Block block : collidable) {
+      if (block != null && block.collidesBeside(box)) {
+        if (velocity.y < 0)
+          setGrounded(true);
+        velocity.y = 0;
+        break;
+      }
+    }
+
+    // Then reset his collision box to his current position
+    box.y = getY();
+
+    // Update his current position
+    moveBy(velocity.x, velocity.y);
+    bounds.x = getX();
+    bounds.y = getY();
+
+    // un-scale the velocity
+    velocity.scl(1 / delta);
   }
 
   /**
@@ -135,6 +227,7 @@ public class Hero extends GameActor {
    */
   private void jump(boolean setJumping, float vy) {
     velocity.y = vy;
+
     if (setJumping)
       setState(State.JUMPING);
   }
