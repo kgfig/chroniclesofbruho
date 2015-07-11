@@ -5,16 +5,13 @@ package com.cisigsoftware.legendofbruho.screens.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Block;
+import com.cisigsoftware.legendofbruho.screens.game.actors.Enemy;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Hero;
-import com.cisigsoftware.legendofbruho.screens.game.utils.HeroController;
 
 /**
  * @author kg
@@ -25,26 +22,25 @@ public class GameStage extends Stage {
   public static final float WORLD_WIDTH = 16f;
   public static final float WORLD_HALF = WORLD_WIDTH / 2f;
   public static final float WORLD_HEIGHT = 9f;
-  private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 150ms
+  private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 200ms
 
   private OrthographicCamera camera;
   private Level level;
-  private Array<Block> collidable;
+  private Array<Enemy> enemies;
 
   private Hero hero;
   private HeroController controller;
   private long jumpingPressedTime;
   private boolean jumpingPressed;
 
-  private Array<Rectangle> collisionBoxes;
-  private ShapeRenderer debugRenderer = new ShapeRenderer();
+//  private Array<Rectangle> collisionBoxes;
+//  private ShapeRenderer debugRenderer = new ShapeRenderer();
 
   public GameStage() {
     super();
 
-    initDataStructures();
-    createActors();
     createLevel();
+    createActors();
     setCameraViewport();
     setDebugAll(true);
 
@@ -52,18 +48,26 @@ public class GameStage extends Stage {
     Gdx.input.setInputProcessor(this);
   }
 
-  private void initDataStructures() {
-    collidable = new Array<Block>();
-    collisionBoxes = new Array<Rectangle>();
-  }
+//  private void initDataStructures() {
+//    collidable = new Array<Block>();
+//    collisionBoxes = new Array<Rectangle>();
+//  }
 
   /**
-   * Creates the hero
+   * Creates the hero and assigns to enemies
    */
   private void createActors() {
-    hero = new Hero(this, new Vector2(WORLD_WIDTH - 3, 2));
+    hero = new Hero(level, new Vector2(WORLD_WIDTH - 3, 2));
     hero.setDebug(true);
     addActor(hero);
+
+    enemies = level.getEnemies();
+    
+    for (Enemy enemy : enemies) {
+      enemy.setTarget(hero);
+      enemy.setDebug(true);
+      addActor(enemy);
+    }
   }
 
   /**
@@ -71,6 +75,7 @@ public class GameStage extends Stage {
    */
   private void createLevel() {
     level = new Level((int) WORLD_WIDTH * 2, (int) WORLD_HEIGHT);
+    
     Block[][] blocks = level.getBlocks();
 
     for (Block[] blockCol : blocks) {
@@ -125,7 +130,15 @@ public class GameStage extends Stage {
   @Override
   public void act(float delta) {
     super.act(delta);
-
+    
+//    for (Enemy enemy : enemies) {
+//      if (enemy.getX() >= camera.position.x - WORLD_HALF && enemy.getX() <= camera.position.x + WORLD_HALF) {
+//        enemy.setStateMoving();
+//      } else {
+//        enemy.setStateIdle();
+//      }
+//    }
+    
     if (controller.isJumpPressed()) {
       if (!hero.isJumping()) {
         jumpingPressed = true;
@@ -155,7 +168,7 @@ public class GameStage extends Stage {
         hero.moveRight();
     } else {
       if (!hero.isJumping()) {
-        hero.stand();
+        hero.idle();
       }
       hero.stopWalking();
     }
@@ -165,25 +178,6 @@ public class GameStage extends Stage {
   public void draw() {
     super.draw();
 
-    // Keep the hero inside the current level
-    
-    if (hero.getX() < 0) {
-      hero.resetX();
-    }
-
-    if (hero.getY() < 0) {
-      hero.resetY();
-    }
-
-    float rightX = level.getWidth() - hero.getBounds().getWidth();
-    
-    if (hero.getX() > rightX) {
-      hero.setX(rightX);
-
-      if (!hero.isJumping())
-        hero.stand();
-    }
-
     // Set camera to follow the hero's movement
     if (hero.getX() + WORLD_HALF < level.getWidth() && hero.getX() - WORLD_HALF >= 0)
       camera.position.x = hero.getX();
@@ -191,20 +185,19 @@ public class GameStage extends Stage {
     camera.update();
 
     // Draw collision boxes for debugging
-    drawCollisionBoxes();
+//    drawCollisionBoxes();
   }
 
-  private void drawCollisionBoxes() {
-    debugRenderer.setProjectionMatrix(camera.combined);
-    debugRenderer.setAutoShapeType(true);
-    debugRenderer.begin();
-    debugRenderer.setColor(new Color(1, 0, 0, 1));
-    for (Rectangle rect : collisionBoxes) {
-      debugRenderer.rect(rect.x, rect.y, rect.width, rect.height);
-    }
-    debugRenderer.end();
-  }
-
+//  private void drawCollisionBoxes() {
+//    debugRenderer.setProjectionMatrix(camera.combined);
+//    debugRenderer.setAutoShapeType(true);
+//    debugRenderer.begin();
+//    debugRenderer.setColor(new Color(1, 0, 0, 1));
+//    for (Rectangle rect : collisionBoxes) {
+//      debugRenderer.rect(rect.x, rect.y, rect.width, rect.height);
+//    }
+//    debugRenderer.end();
+//  }
 
   /**
    * Returns the blocks that are in the camera’s window and will be rendered
@@ -238,42 +231,20 @@ public class GameStage extends Stage {
     }
   }
 
-  /**
-   * Populates the collidable blocks
-   * 
-   * @param startX left x
-   * @param startY bottom y
-   * @param endX right x
-   * @param endY top y
-   */
-  public Array<Block> populateCollidableBlocks(int startX, int startY, int endX, int endY) {
-    collidable.clear();
-
-    for (int x = startX; x <= endX; x++) {
-      for (int y = startY; y <= endY; y++) {
-        // Add block to collidable list and just make sure that it's within the level bounds
-        if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight())
-          collidable.add(level.getBlock(x, y));
-      }
-    }
-
-    return collidable;
-  }
-
-  /**
-   * Clears the collision boxes
-   */
-  public void clearCollisionBoxes() {
-    collisionBoxes.clear();
-  }
-
-  /**
-   * Shows block bounds to check for collision
-   * 
-   * @param blockBox
-   */
-  public void addCollisionBox(Rectangle blockBox) {
-    collisionBoxes.add(blockBox);
-  }
+//  /**
+//   * Clears the collision boxes
+//   */
+//  public void clearCollisionBoxes() {
+//    collisionBoxes.clear();
+//  }
+//
+//  /**
+//   * Shows block bounds to check for collision
+//   * 
+//   * @param blockBox
+//   */
+//  public void addCollisionBox(Rectangle blockBox) {
+//    collisionBoxes.add(blockBox);
+//  }
 
 }

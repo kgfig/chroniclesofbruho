@@ -1,7 +1,7 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game.utils;
+package com.cisigsoftware.legendofbruho.screens.game;
 
 import java.util.HashMap;
 import java.util.Map;

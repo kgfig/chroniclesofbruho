@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
  * @author kg
  *
  */
-public class Block extends GameActor {
+public class Block extends BoundedActor {
 
   private static final float SIZE = 1f;
   
