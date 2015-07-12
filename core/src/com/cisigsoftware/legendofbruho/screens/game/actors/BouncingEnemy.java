@@ -4,11 +4,7 @@
 package com.cisigsoftware.legendofbruho.screens.game.actors;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.cisigsoftware.legendofbruho.screens.game.Level;
 
 /**
@@ -19,8 +15,12 @@ public class BouncingEnemy extends Enemy {
 
   private static final String TAG = BouncingEnemy.class.getSimpleName();
 
-  private static final float GRAVITY = -20f; // gravity acceleration
+  private static final float GRAVITY = -20f;
   private static final float SIZE = 0.5f;
+
+  private static final float MAX_HP = 5;
+  private static final float DAMAGE = 5;
+
   private static final float NEAR_DISTANCE = 5f;
   private static final float VY = 9f;
   private static final float VX = 2f;
@@ -32,18 +32,21 @@ public class BouncingEnemy extends Enemy {
     setGrounded(true);
     setState(State.IDLE);
     setGravity(GRAVITY);
+    setHp(MAX_HP);
+    setMaxHp(MAX_HP);
+    setDamage(DAMAGE);
+
+    Gdx.app.log(TAG, "Initialized BouncingEnemy. HP=" + getHp() + "\tdamage=" + getDamage());
   }
 
   @Override
   public void act(float delta) {
-    Gdx.app.log(TAG, "Step " + delta);
     super.act(delta);
 
     acceleration.y = gravity;
 
     /**
-     * Attack if the target is near
-     * Otherwise, do standby movement
+     * Attack if the target is near Otherwise, do standby movement
      */
     if (isNearTarget() && !isStateAttacking()) {
 
@@ -55,20 +58,39 @@ public class BouncingEnemy extends Enemy {
         velocity.y = VY;
         setState(State.ATTACKING);
         setGrounded(false);
+        Gdx.app.log(TAG, "Bounce up attack");
       } else {
-        if (target.getX() > getX()) {
+        if (target.getX() > getX() + getWidth()) {
           velocity.x = VX;
-        } else {
+          Gdx.app.log(TAG, "Bounce right attack");
+        } else if (target.getX() + target.getWidth() < getX()) {
           velocity.x = -VX;
+          Gdx.app.log(TAG, "Bounce left attack");
         }
       }
     } else if (isStateMoving() && isGrounded()) {
-      
+
       // Bounce in place
-      
+
       velocity.y = VY;
       setGrounded(false);
+      Gdx.app.log(TAG, "Bounce in place");
     }
+    
+    /**
+     * Deal damage on the target upon collision
+     */
+    if (!isGrounded()) {
+      if (attacked) {
+        setAttacked(false);
+        Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
+      } else if (!target.isDying() && this.collidesBeside(target)) {
+        setAttacked(true);
+        target.hurt(damage);
+        Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
+      }
+    }
+
   }
 
   @Override

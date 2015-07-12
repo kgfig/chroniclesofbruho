@@ -46,7 +46,7 @@ public class BoundedActor extends Actor {
    * @param other GameActor
    */
   public boolean collidesBeside(BoundedActor other) {
-    return collidesBeside(other.getBounds());
+    return this.bounds.overlaps(other.getBounds());
   }
 
   /**
@@ -54,8 +54,8 @@ public class BoundedActor extends Actor {
    * 
    * @param other GameActor
    */
-  public boolean collidesBeside(Rectangle bounds) {
-    return bounds.overlaps(bounds);
+  public boolean collidesBeside(Rectangle otherBounds) {
+    return this.bounds.overlaps(otherBounds);
   }
 
   /**

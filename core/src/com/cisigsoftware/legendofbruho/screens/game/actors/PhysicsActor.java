@@ -51,7 +51,7 @@ public abstract class PhysicsActor extends BoundedActor {
     setPosition(x, y);
     setSize(width, height);
 
-    init(level);
+    initPhysicsProperties(level);
   }
 
 
@@ -100,7 +100,7 @@ public abstract class PhysicsActor extends BoundedActor {
   /**
    * Initializes physics properties, flags and collision variables
    */
-  private void init(Level level) {
+  private void initPhysicsProperties(Level level) {
     this.level = level;
     gravity = 0;
     maxVel = 0;

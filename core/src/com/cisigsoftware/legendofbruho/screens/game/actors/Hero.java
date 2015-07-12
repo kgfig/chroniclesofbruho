@@ -3,6 +3,7 @@
  */
 package com.cisigsoftware.legendofbruho.screens.game.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -12,17 +13,21 @@ import com.cisigsoftware.legendofbruho.screens.game.Level;
  * @author kg
  *
  */
-public class Hero extends PhysicsActor {
+public class Hero extends GameActor {
 
   private static final String TAG = Hero.class.getSimpleName();
 
   private static final float GRAVITY = -20f; // gravity acceleration
 
+  // HP-related stats
+  private static final float MAX_HP = 10;
+  private static final float DAMAGE = 5;
+
   private enum State {
     IDLE, WALKING, JUMPING, DYING
   }
 
-  private static final float MAX_VEL = 5f; // maximum velocity for movement along horizontal axis
+  private static final float MAX_VEL = 4f; // maximum velocity for movement along horizontal axis
                                            // while walking or running
   private static final float ACCELERATION = 20f; // for walking and running
   private static final float MAX_JUMP_SPEED = 7f; // terminal and maximum velocity when jumping
@@ -34,8 +39,14 @@ public class Hero extends PhysicsActor {
     super(level, position.x, position.y, SIZE, SIZE);
 
     state = State.IDLE;
+    setGrounded(false);
     setGravity(GRAVITY);
     setMaxVel(MAX_VEL);
+    setHp(MAX_HP);
+    setMaxHp(MAX_HP);
+    setDamage(DAMAGE);
+
+    Gdx.app.log(TAG, "Initialized Hero. HP=" + getHp() + "\tdamage=" + getDamage());
   }
 
   @Override
@@ -46,6 +57,11 @@ public class Hero extends PhysicsActor {
 
     if (isGrounded() && isJumping())
       idle();
+
+    if (!hasHp() && !isDying()) {
+      Gdx.app.log(TAG, "Hero died.");
+      die();
+    }
   }
 
   @Override
@@ -163,17 +179,15 @@ public class Hero extends PhysicsActor {
   }
 
   /**
-   * @return the state
-   */
-  private State getState() {
-    return state;
-  }
-
-  /**
    * @param state the state to set
    */
   private void setState(State state) {
     this.state = state;
+  }
+
+  private void die() {
+    setState(State.DYING);
+    remove();
   }
 
   /**
@@ -182,7 +196,16 @@ public class Hero extends PhysicsActor {
    * @return true if the current state of hero is JUMPING
    */
   public boolean isJumping() {
-    return getState() == State.JUMPING;
+    return state == State.JUMPING;
+  }
+
+  /**
+   * Returns true if the current state of hero is DYING
+   * 
+   * @return true if the current state of hero is DYING
+   */
+  public boolean isDying() {
+    return state == State.DYING;
   }
 
   /**
@@ -191,7 +214,7 @@ public class Hero extends PhysicsActor {
    * @return true if the current state of hero is WALKING
    */
   public boolean isWalking() {
-    return getState() == State.WALKING;
+    return state == State.WALKING;
   }
 
   /**

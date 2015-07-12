@@ -9,7 +9,7 @@ import com.cisigsoftware.legendofbruho.screens.game.Level;
  * @author kg
  *
  */
-public abstract class Enemy extends PhysicsActor {
+public abstract class Enemy extends GameActor {
 
   protected enum State {
     IDLE, MOVING, ATTACKING, DYING;
@@ -17,9 +17,10 @@ public abstract class Enemy extends PhysicsActor {
 
   private static final String TAG = Enemy.class.getSimpleName();
 
-  protected BoundedActor target;
+  protected Hero target;
   private State state;
   private float nearThreshold;
+  protected boolean attacked;
 
   public Enemy(Level level, float x, float y, float width, float height) {
     super(level, x, y, width, height);
@@ -31,7 +32,7 @@ public abstract class Enemy extends PhysicsActor {
    * @param target
    */
 
-  public void setTarget(BoundedActor target) {
+  public void setTarget(Hero target) {
     this.target = target;
   }
 
@@ -97,6 +98,28 @@ public abstract class Enemy extends PhysicsActor {
    */
   public boolean isStateDying() {
     return getState() == State.DYING;
+  }
+  
+  /**
+   * Sets the state of the enemy to dying
+   */
+  public void setStateDying() {
+    setState(State.DYING);
+  }
+  
+  /**
+   * @return true if the enemy has attacked and harmed the target
+   */
+  public boolean attacked() {
+    return attacked;
+  }
+
+  /**
+   * Sets if the enemy has attacked and harmed the target
+   * @param flag to indicate that the enemy has attacked and harmed the target
+   */
+  public void setAttacked(boolean attacked) {
+    this.attacked = attacked;
   }
 
   /**
