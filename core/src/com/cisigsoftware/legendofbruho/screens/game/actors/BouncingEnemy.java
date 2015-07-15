@@ -45,52 +45,50 @@ public class BouncingEnemy extends Enemy {
 
     acceleration.y = gravity;
 
-    /**
-     * Attack if the target is near Otherwise, do standby movement
-     */
-    if (isNearTarget() && !isStateAttacking()) {
-
-      // If the enemy is on the ground, toggle the flag and bounce up to attack.
-      // While suspended in the air, move to the left or to the right depending on the target's
-      // direction
-
-      if (isGrounded()) {
+    if (!level.isComplete()) {
+      /**
+       * Attack if the target is near Otherwise, do standby movement
+       */
+      if (isNearTarget() && !isStateAttacking()) {
+        // If the enemy is on the ground, toggle the flag and bounce up to attack.
+        // While suspended in the air, move to the left or to the right depending on the target's
+        // direction
+        if (isGrounded()) {
+          velocity.y = VY;
+          setState(State.ATTACKING);
+          setGrounded(false);
+          Gdx.app.log(TAG, "Bounce up attack");
+        } else {
+          if (target.getX() > getX() + getWidth()) {
+            velocity.x = VX;
+            Gdx.app.log(TAG, "Bounce right attack");
+          } else if (target.getX() + target.getWidth() < getX()) {
+            velocity.x = -VX;
+            Gdx.app.log(TAG, "Bounce left attack");
+          }
+        }
+      } else if (isStateMoving() && isGrounded()) {
+        // Bounce in place
         velocity.y = VY;
-        setState(State.ATTACKING);
         setGrounded(false);
-        Gdx.app.log(TAG, "Bounce up attack");
-      } else {
-        if (target.getX() > getX() + getWidth()) {
-          velocity.x = VX;
-          Gdx.app.log(TAG, "Bounce right attack");
-        } else if (target.getX() + target.getWidth() < getX()) {
-          velocity.x = -VX;
-          Gdx.app.log(TAG, "Bounce left attack");
+        Gdx.app.log(TAG, "Bounce in place");
+      }
+
+      /**
+       * Deal damage on the target upon collision
+       */
+      if (!isGrounded()) {
+        if (attacked) {
+          setAttacked(false);
+          Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
+        } else if (!target.isDying() && this.collidesBeside(target)) {
+          setAttacked(true);
+          target.hurt(damage);
+          Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
         }
       }
-    } else if (isStateMoving() && isGrounded()) {
 
-      // Bounce in place
-
-      velocity.y = VY;
-      setGrounded(false);
-      Gdx.app.log(TAG, "Bounce in place");
     }
-    
-    /**
-     * Deal damage on the target upon collision
-     */
-    if (!isGrounded()) {
-      if (attacked) {
-        setAttacked(false);
-        Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
-      } else if (!target.isDying() && this.collidesBeside(target)) {
-        setAttacked(true);
-        target.hurt(damage);
-        Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
-      }
-    }
-
   }
 
   @Override
@@ -158,7 +156,6 @@ public class BouncingEnemy extends Enemy {
         if (velocity.y < 0)
           setGrounded(true);
         velocity.y = 0;
-        Gdx.app.log(TAG, "Stop velocity grounded=" + isGrounded());
         break;
       }
     }

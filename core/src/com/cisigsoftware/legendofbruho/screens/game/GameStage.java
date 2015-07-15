@@ -58,7 +58,7 @@ public class GameStage extends Stage {
    * Creates the hero and assigns to enemies
    */
   private void createActors() {
-    hero = new Hero(level, new Vector2(WORLD_WIDTH - 3, 2));
+    hero = new Hero(level, new Vector2(1, WORLD_HEIGHT - 1));
     hero.setDebug(true);
     addActor(hero);
 
@@ -75,7 +75,7 @@ public class GameStage extends Stage {
    * Creates the current level
    */
   private void createLevel() {
-    level = new Level((int) WORLD_WIDTH * 2, (int) WORLD_HEIGHT);
+    level = new Level();
 
     Block[][] blocks = level.getBlocks();
 
@@ -131,6 +131,7 @@ public class GameStage extends Stage {
   @Override
   public void act(float delta) {
     super.act(delta);
+
 
     // Show enemies on standby when they are within the camera's viewport
     for (Enemy enemy : enemies) {

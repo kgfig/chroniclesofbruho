@@ -3,7 +3,6 @@
  */
 package com.cisigsoftware.legendofbruho.screens.game;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Block;
 import com.cisigsoftware.legendofbruho.screens.game.actors.BouncingEnemy;
@@ -19,54 +18,53 @@ import com.cisigsoftware.legendofbruho.screens.game.actors.Enemy;
  */
 public class Level {
 
+  private static int[][] demoLevel = new int[][] {
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,0,1,1,1,1,0,1,1,0,0,1,1,0,0,1,1,1,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,1,0,0,1},
+    {1,0,0,1,1,1,0,0,1,0,0,1,0,0,0,0,1,1,1,0,0,0,1,1,0,0,0,0,0,1,1,1,1,1,0,0,1},
+    {1,0,0,0,1,1,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,0,1},
+    {1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,3,0,0,0,0,0,0,4,1},
+    {1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,3,1,1},
+    {1,0,0,0,0,0,0,3,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,1,0,0,0,0,1,1,1},
+    {1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,3,0,1,1,1,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
+
   private int width;
   private int height;
   private Block[][] blocks;
   private Array<Enemy> enemies;
+  private boolean complete;
 
-  public Level(int width, int height) {
-    this.width = width;
-    this.height = height;
+  public Level() {
+    createDemoLevel();
+    complete = false;
+  }
+
+  private void createDemoLevel() {
+    this.width = demoLevel[0].length;
+    this.height = demoLevel.length;
     blocks = new Block[width][height];
     enemies = new Array<Enemy>();
 
-    createDemoTerrain();
-    createDemoEnemies();
-  }
-
-  private void createDemoTerrain() {
-    int rightMostX = width - 1;
-    int middleX = height / 2;
-
-    // nullify all blocks
-    for (int col = 0; col < width; col++) {
-      for (int row = 0; row < height; row++) {
-        blocks[col][row] = null;
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        switch (demoLevel[height - 1 - y][x]) {
+          case 1:
+            blocks[x][y] = new Block(x, y);
+            break;
+          case 3:
+            enemies.add(new BouncingEnemy(this, x, y));
+            break;
+          case 4:
+            blocks[x][y] = new Block(x, y);
+            blocks[x][y].setGoal(true);
+            break;
+          default:
+            blocks[x][y] = null;
+            break;
+        }
       }
     }
-
-    // build the ground and ceiling
-    for (int col = 0; col < width; col++) {
-      blocks[col][0] = new Block(new Vector2(col, 0));
-      blocks[col][height - 1] = new Block(new Vector2(col, height - 1));
-
-      if (col > 2)
-        blocks[col][1] = new Block(new Vector2(col, 1));
-    }
-
-    // build the right wall
-    for (int row = 2; row < height - 1; row++) {
-      blocks[rightMostX][row] = new Block(new Vector2(rightMostX, row));
-    }
-
-    // build middle wall with passage at the bottom
-    for (int row = 3; row < height - 1; row++) {
-      blocks[middleX][row] = new Block(new Vector2(middleX, row));
-    }
-  }
-
-  private void createDemoEnemies() {
-    enemies.add(new BouncingEnemy(this, 6f, 2f));
   }
 
   /**
@@ -144,7 +142,8 @@ public class Level {
    * @param endX right x
    * @param endY top y
    */
-  public Array<Block> getCollidableBlocks(Array<Block> collidable, int startX, int startY, int endX, int endY) {
+  public Array<Block> getCollidableBlocks(Array<Block> collidable, int startX, int startY, int endX,
+      int endY) {
     collidable.clear();
 
     for (int x = startX; x <= endX; x++) {
@@ -156,5 +155,35 @@ public class Level {
     }
 
     return collidable;
+  }
+
+  /**
+   * Returns the block marked as goal
+   * @return the block marked as goal
+   */
+  public Block getGoal() {
+    for (Block[] blockRow : blocks) {
+      for (Block block : blockRow) {
+        if (block != null && block.isGoal()) {
+          return block;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * @return true if the level has been completed
+   */
+  public boolean isComplete() {
+    return complete;
+  }
+
+  /**
+   * @param complete true if the level has been completed
+   */
+  public void setComplete(boolean complete) {
+    this.complete = complete;
   }
 }

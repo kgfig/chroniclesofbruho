@@ -34,10 +34,12 @@ public class Hero extends GameActor {
   private static final float SIZE = 0.5f;
 
   private State state;
+  private Block goal;
 
   public Hero(Level level, Vector2 position) {
     super(level, position.x, position.y, SIZE, SIZE);
 
+    goal = level.getGoal();
     state = State.IDLE;
     setGrounded(false);
     setGravity(GRAVITY);
@@ -58,9 +60,15 @@ public class Hero extends GameActor {
     if (isGrounded() && isJumping())
       idle();
 
-    if (!hasHp() && !isDying()) {
-      Gdx.app.log(TAG, "Hero died.");
-      die();
+    if (!level.isComplete()) {
+      if (!hasHp() && !isDying()) {
+        Gdx.app.log(TAG, "Hero died.");
+        die();
+      }
+
+      if (goal != null && this.collidesBeside(goal)) {
+        level.setComplete(true);
+      }
     }
   }
 
@@ -105,7 +113,7 @@ public class Hero extends GameActor {
 
     // If he collides, stop his x-velocity to 0
     for (Block block : collidable) {
-      if (block != null && block.collidesBeside(box)) {
+      if (block != null && !block.isGoal() && block.collidesBeside(box)) {
         velocity.x = 0;
         break;
       }
@@ -136,7 +144,7 @@ public class Hero extends GameActor {
 
     // If he collides, set his y-velocity to 0 and set grounded to true
     for (Block block : collidable) {
-      if (block != null && block.collidesBeside(box)) {
+      if (block != null && !block.isGoal() && block.collidesBeside(box)) {
         if (velocity.y < 0)
           setGrounded(true);
         velocity.y = 0;
