@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Block;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Enemy;
 import com.cisigsoftware.legendofbruho.screens.game.actors.Hero;
+import com.cisigsoftware.legendofbruho.utils.Constants;
 
 /**
  * @author kg
@@ -26,7 +27,8 @@ public class GameStage extends Stage {
   private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 200ms
 
   private OrthographicCamera camera;
-  private Level level;
+  private Array<Level> levels;
+  private Level currentLevel;
   private Array<Enemy> enemies;
 
   private Hero hero;
@@ -34,14 +36,12 @@ public class GameStage extends Stage {
   private long jumpingPressedTime;
   private boolean jumpingPressed;
 
-  // private Array<Rectangle> collisionBoxes;
-  // private ShapeRenderer debugRenderer = new ShapeRenderer();
-
   public GameStage() {
     super();
 
-    createLevel();
-    createActors();
+    createLevels();
+    createHero();
+    setCurrentLevel();
     setCameraViewport();
     setDebugAll(true);
 
@@ -49,35 +49,45 @@ public class GameStage extends Stage {
     Gdx.input.setInputProcessor(this);
   }
 
-  // private void initDataStructures() {
-  // collidable = new Array<Block>();
-  // collisionBoxes = new Array<Rectangle>();
-  // }
+  /**
+   * Creates the current level
+   */
+  private void createLevels() {
+    levels = new Array<Level>();
+    levels.add(new Level(Constants.DEMO_LEVEL1));
+    levels.add(new Level(Constants.DEMO_LEVEL2));
+    levels.add(new Level(Constants.DEMO_LEVEL3));
+    levels.add(new Level(Constants.DEMO_LEVEL4));
+    levels.add(new Level(Constants.DEMO_LEVEL5));
+    levels.add(new Level(Constants.DEMO_LEVEL6));
+  }
+
 
   /**
    * Creates the hero and assigns to enemies
    */
-  private void createActors() {
-    hero = new Hero(level, new Vector2(1, WORLD_HEIGHT - 1));
+  private void createHero() {
+    hero = new Hero(new Vector2(1, WORLD_HEIGHT - 1));
     hero.setDebug(true);
+  }
+
+  /**
+   * Sets the current level for the game actors and builds the level terrain
+   */
+  private void setCurrentLevel() {
+    currentLevel = getNextLevel();
+    hero.setLevel(currentLevel);
+    hero.setPosition(1, WORLD_HEIGHT - 1);
     addActor(hero);
 
-    enemies = level.getEnemies();
-
+    enemies = currentLevel.getEnemies();
     for (Enemy enemy : enemies) {
       enemy.setTarget(hero);
       enemy.setDebug(true);
       addActor(enemy);
     }
-  }
 
-  /**
-   * Creates the current level
-   */
-  private void createLevel() {
-    level = new Level();
-
-    Block[][] blocks = level.getBlocks();
+    Block[][] blocks = currentLevel.getBlocks();
 
     for (Block[] blockCol : blocks) {
       for (Block block : blockCol) {
@@ -87,6 +97,45 @@ public class GameStage extends Stage {
         }
       }
     }
+  }
+
+  /**
+   * Returns the next unfinished level
+   * 
+   * @return the next unfinished level
+   */
+  private boolean hasNextLevel() {
+    return getNextLevel() != null;
+  }
+
+
+  /**
+   * Returns the next unfinished level
+   * 
+   * @return the next unfinished level
+   */
+  private Level getNextLevel() {
+    if (currentLevel == null)
+      return levels.get(0);
+    else {
+      for (Level level : levels) {
+        if (!level.isComplete()) {
+          return level;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private void clearWorld() {
+    hero.remove();
+    currentLevel.remove();
+    enemies.clear();
+  }
+  
+  private void resetCameraPosition() {
+    camera.position.x = WORLD_HALF;
   }
 
   /**
@@ -132,51 +181,61 @@ public class GameStage extends Stage {
   public void act(float delta) {
     super.act(delta);
 
-
-    // Show enemies on standby when they are within the camera's viewport
-    for (Enemy enemy : enemies) {
-      if (enemy.getX() >= camera.position.x - WORLD_HALF
-          && enemy.getX() <= camera.position.x + WORLD_HALF) {
-        if (!enemy.isStateMoving()) {
-          enemy.setStateMoving();
-        }
+    if (currentLevel.isComplete()) {
+      if (hasNextLevel()) {
+        clearWorld();
+        setCurrentLevel();
+        resetCameraPosition();
       } else {
-        enemy.setStateIdle();
+        // You win!
       }
-    }
-
-    if (controller.isJumpPressed()) {
-      if (!hero.isJumping()) {
-        jumpingPressed = true;
-        jumpingPressedTime = System.currentTimeMillis();
-        hero.jump();
-        hero.setGrounded(false);
-      } else {
-        long pressedDuration = System.currentTimeMillis() - jumpingPressedTime;
-
-        if (jumpingPressed && pressedDuration >= LONG_JUMP_PRESS) {
-          jumpingPressed = false;
-        } else if (jumpingPressed) {
-          hero.propelUp();
-        }
-      }
-    }
-
-    if (controller.isLeftPressed()) {
-      if (!hero.isJumping())
-        hero.walkLeft();
-      else
-        hero.moveLeft();
-    } else if (controller.isRightPressed()) {
-      if (!hero.isJumping())
-        hero.walkRight();
-      else
-        hero.moveRight();
     } else {
-      if (!hero.isJumping()) {
-        hero.idle();
+
+      // Show enemies on standby when they are within the camera's viewport
+      for (Enemy enemy : enemies) {
+        if (enemy.getX() >= camera.position.x - WORLD_HALF
+            && enemy.getX() <= camera.position.x + WORLD_HALF) {
+          if (!enemy.isStateMoving()) {
+            enemy.setStateMoving();
+          }
+        } else {
+          enemy.setStateIdle();
+        }
       }
-      hero.stopWalking();
+
+      if (controller.isJumpPressed()) {
+        if (!hero.isJumping()) {
+          jumpingPressed = true;
+          jumpingPressedTime = System.currentTimeMillis();
+          hero.jump();
+          hero.setGrounded(false);
+        } else {
+          long pressedDuration = System.currentTimeMillis() - jumpingPressedTime;
+
+          if (jumpingPressed && pressedDuration >= LONG_JUMP_PRESS) {
+            jumpingPressed = false;
+          } else if (jumpingPressed) {
+            hero.propelUp();
+          }
+        }
+      }
+
+      if (controller.isLeftPressed()) {
+        if (!hero.isJumping())
+          hero.walkLeft();
+        else
+          hero.moveLeft();
+      } else if (controller.isRightPressed()) {
+        if (!hero.isJumping())
+          hero.walkRight();
+        else
+          hero.moveRight();
+      } else {
+        if (!hero.isJumping()) {
+          hero.idle();
+        }
+        hero.stopWalking();
+      }
     }
   }
 
@@ -185,25 +244,11 @@ public class GameStage extends Stage {
     super.draw();
 
     // Set camera to follow the hero's movement
-    if (hero.getX() + WORLD_HALF < level.getWidth() && hero.getX() - WORLD_HALF >= 0)
+    if (hero.getX() + WORLD_HALF < currentLevel.getWidth() && hero.getX() - WORLD_HALF >= 0)
       camera.position.x = hero.getX();
 
     camera.update();
-
-    // Draw collision boxes for debugging
-    // drawCollisionBoxes();
   }
-
-  // private void drawCollisionBoxes() {
-  // debugRenderer.setProjectionMatrix(camera.combined);
-  // debugRenderer.setAutoShapeType(true);
-  // debugRenderer.begin();
-  // debugRenderer.setColor(new Color(1, 0, 0, 1));
-  // for (Rectangle rect : collisionBoxes) {
-  // debugRenderer.rect(rect.x, rect.y, rect.width, rect.height);
-  // }
-  // debugRenderer.end();
-  // }
 
   /**
    * Returns the blocks that are in the camera’s window and will be rendered
@@ -227,30 +272,14 @@ public class GameStage extends Stage {
     int y2 = y + 2 * height;
 
     // Clamp right x to the level width
-    if (x2 >= level.getWidth()) {
-      x2 = level.getWidth() - 1;
+    if (x2 >= currentLevel.getWidth()) {
+      x2 = currentLevel.getWidth() - 1;
     }
 
     // Clamp top y to the level height
-    if (y2 >= level.getHeight()) {
-      y2 = level.getHeight() - 1;
+    if (y2 >= currentLevel.getHeight()) {
+      y2 = currentLevel.getHeight() - 1;
     }
   }
-
-  // /**
-  // * Clears the collision boxes
-  // */
-  // public void clearCollisionBoxes() {
-  // collisionBoxes.clear();
-  // }
-  //
-  // /**
-  // * Shows block bounds to check for collision
-  // *
-  // * @param blockBox
-  // */
-  // public void addCollisionBox(Rectangle blockBox) {
-  // collisionBoxes.add(blockBox);
-  // }
 
 }

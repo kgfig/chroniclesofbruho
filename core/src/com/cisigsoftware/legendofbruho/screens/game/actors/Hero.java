@@ -36,10 +36,9 @@ public class Hero extends GameActor {
   private State state;
   private Block goal;
 
-  public Hero(Level level, Vector2 position) {
-    super(level, position.x, position.y, SIZE, SIZE);
+  public Hero(Vector2 position) {
+    super(position.x, position.y, SIZE, SIZE);
 
-    goal = level.getGoal();
     state = State.IDLE;
     setGrounded(false);
     setGravity(GRAVITY);
@@ -295,4 +294,9 @@ public class Hero extends GameActor {
     this.acceleration.x = ACCELERATION;
   }
 
+  @Override
+  public void setLevel(Level level) {
+    this.level = level;
+    goal = level.getGoal();
+  }
 }

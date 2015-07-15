@@ -18,37 +18,21 @@ import com.cisigsoftware.legendofbruho.screens.game.actors.Enemy;
  */
 public class Level {
 
-  private static int[][] demoLevel = new int[][] {
-    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-    {1,0,1,1,1,1,0,1,1,0,0,1,1,0,0,1,1,1,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,1,0,0,1},
-    {1,0,0,1,1,1,0,0,1,0,0,1,0,0,0,0,1,1,1,0,0,0,1,1,0,0,0,0,0,1,1,1,1,1,0,0,1},
-    {1,0,0,0,1,1,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,0,1},
-    {1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,3,0,0,0,0,0,0,4,1},
-    {1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,3,1,1},
-    {1,0,0,0,0,0,0,3,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,1,0,0,0,0,1,1,1},
-    {1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,3,0,1,1,1,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1},
-    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
-
   private int width;
   private int height;
   private Block[][] blocks;
   private Array<Enemy> enemies;
   private boolean complete;
 
-  public Level() {
-    createDemoLevel();
-    complete = false;
-  }
-
-  private void createDemoLevel() {
-    this.width = demoLevel[0].length;
-    this.height = demoLevel.length;
+  public Level(int[][] matrix) {
+    this.width = matrix[0].length;
+    this.height = matrix.length;
     blocks = new Block[width][height];
     enemies = new Array<Enemy>();
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
-        switch (demoLevel[height - 1 - y][x]) {
+        switch (matrix[height - 1 - y][x]) {
           case 1:
             blocks[x][y] = new Block(x, y);
             break;
@@ -65,6 +49,7 @@ public class Level {
         }
       }
     }
+    complete = false;
   }
 
   /**
@@ -159,6 +144,7 @@ public class Level {
 
   /**
    * Returns the block marked as goal
+   * 
    * @return the block marked as goal
    */
   public Block getGoal() {
@@ -185,5 +171,18 @@ public class Level {
    */
   public void setComplete(boolean complete) {
     this.complete = complete;
+  }
+
+  public void remove() {
+    for (Enemy enemy : enemies) {
+      enemy.remove();
+    }
+
+    for (Block[] blockRow : blocks) {
+      for (Block block : blockRow) {
+        if (block != null)
+          block.remove();
+      }
+    }
   }
 }

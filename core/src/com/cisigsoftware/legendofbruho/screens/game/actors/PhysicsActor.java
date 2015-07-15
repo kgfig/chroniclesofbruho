@@ -27,7 +27,7 @@ public abstract class PhysicsActor extends BoundedActor {
    */
   protected float gravity;
   protected float maxVel;
-  
+
   /*
    * Collision variables
    */
@@ -46,12 +46,12 @@ public abstract class PhysicsActor extends BoundedActor {
     super();
   }
 
-  public PhysicsActor(Level level, float x, float y, float width, float height) {
+  public PhysicsActor(float x, float y, float width, float height) {
     super(x, y, width, height);
     setPosition(x, y);
     setSize(width, height);
 
-    initPhysicsProperties(level);
+    initPhysicsProperties();
   }
 
 
@@ -59,7 +59,7 @@ public abstract class PhysicsActor extends BoundedActor {
    * Override this method to implement the collision behavior of this actor with blocks
    */
   protected abstract void checkCollisionWithBlocks(float delta);
-  
+
   @Override
   public void act(float delta) {
     super.act(delta);
@@ -100,11 +100,10 @@ public abstract class PhysicsActor extends BoundedActor {
   /**
    * Initializes physics properties, flags and collision variables
    */
-  private void initPhysicsProperties(Level level) {
-    this.level = level;
+  private void initPhysicsProperties() {
     gravity = 0;
     maxVel = 0;
-    
+
     collidable = new Array<Block>();
     rectPool = new Pool<Rectangle>() {
       @Override
@@ -112,7 +111,7 @@ public abstract class PhysicsActor extends BoundedActor {
         return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
       }
     };
-    
+
     acceleration = new Vector2();
     velocity = new Vector2();
     grounded = false;
@@ -132,7 +131,14 @@ public abstract class PhysicsActor extends BoundedActor {
   protected void resetY() {
     setY(0);
   }
-  
+
+  /**
+   * Sets the current level of the actor
+   */
+  public void setLevel(Level level) {
+    this.level = level;
+  }
+
   /**
    * @param gravity the gravity to set
    */

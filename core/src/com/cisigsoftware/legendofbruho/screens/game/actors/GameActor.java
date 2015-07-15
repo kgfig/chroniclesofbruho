@@ -4,7 +4,6 @@
 package com.cisigsoftware.legendofbruho.screens.game.actors;
 
 import com.badlogic.gdx.Gdx;
-import com.cisigsoftware.legendofbruho.screens.game.Level;
 
 /**
  * @author kg
@@ -21,8 +20,8 @@ public abstract class GameActor extends PhysicsActor {
     super();
   }
 
-  public GameActor(Level level, float x, float y, float width, float height) {
-    super(level, x, y, width, height);
+  public GameActor(float x, float y, float width, float height) {
+    super(x, y, width, height);
 
     initStats();
   }

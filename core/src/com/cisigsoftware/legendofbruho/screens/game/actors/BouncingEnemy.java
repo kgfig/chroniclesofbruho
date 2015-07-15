@@ -21,12 +21,12 @@ public class BouncingEnemy extends Enemy {
   private static final float MAX_HP = 5;
   private static final float DAMAGE = 5;
 
-  private static final float NEAR_DISTANCE = 5f;
+  private static final float NEAR_DISTANCE = 3f;
   private static final float VY = 9f;
   private static final float VX = 2f;
 
   public BouncingEnemy(Level level, float x, float y) {
-    super(level, x, y, SIZE, SIZE);
+    super(x, y, SIZE, SIZE);
 
     setNearThreshold(NEAR_DISTANCE);
     setGrounded(true);
@@ -35,6 +35,7 @@ public class BouncingEnemy extends Enemy {
     setHp(MAX_HP);
     setMaxHp(MAX_HP);
     setDamage(DAMAGE);
+    setLevel(level);
 
     Gdx.app.log(TAG, "Initialized BouncingEnemy. HP=" + getHp() + "\tdamage=" + getDamage());
   }

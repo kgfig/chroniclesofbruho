@@ -3,8 +3,6 @@
  */
 package com.cisigsoftware.legendofbruho.screens.game.actors;
 
-import com.cisigsoftware.legendofbruho.screens.game.Level;
-
 /**
  * @author kg
  *
@@ -22,8 +20,8 @@ public abstract class Enemy extends GameActor {
   private float nearThreshold;
   protected boolean attacked;
 
-  public Enemy(Level level, float x, float y, float width, float height) {
-    super(level, x, y, width, height);
+  public Enemy(float x, float y, float width, float height) {
+    super(x, y, width, height);
   }
   
   /**
