@@ -1,6 +1,5 @@
 /**
- * Copyright 2015 CISIG Software Labs Inc.
- * All Rights Reserved.
+ * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
 package com.cisigsoftware.legendofbruho.screens;
 
@@ -14,50 +13,50 @@ import com.cisigsoftware.legendofbruho.screens.game.GameStage;
  *
  */
 public class GameScreen implements Screen {
-  
+
   protected GameStage stage;
-  
+
   public GameScreen() {
     stage = new GameStage();
   }
-  
+
   @Override
   public void show() {
-    
+
   }
 
   @Override
   public void render(float delta) {
-     Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-     
-     stage.act(delta);
-     stage.draw();
+    // Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+    Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+    stage.act(delta);
+    stage.draw();
   }
 
   @Override
   public void resize(int width, int height) {
-    
   }
 
   @Override
   public void pause() {
-    
+
   }
 
   @Override
   public void resume() {
-    
+
   }
 
   @Override
   public void hide() {
-    
+
   }
 
   @Override
   public void dispose() {
-    
+
   }
 
-  
+
 }

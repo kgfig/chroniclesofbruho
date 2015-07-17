@@ -3,135 +3,146 @@
  */
 package com.cisigsoftware.legendofbruho.screens.game.actors;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.cisigsoftware.legendofbruho.screens.game.actors.data.EnemyData;
-import com.cisigsoftware.legendofbruho.screens.game.actors.data.UserData;
-
 /**
  * @author kg
  *
  */
-public class Enemy extends GameActor {
+public abstract class Enemy extends GameActor {
 
-  public static final float X = 30f;
-  public static final float Y = Ground.Y + Ground.HEIGHT;
-  public static final float WIDTH = 2f;
-  public static final float HEIGHT = 2f;
-  public static final float DENSITY = 1.5f;
-  public static final Vector2 ATTACK_LINEAR_IMPULSE = new Vector2(-30, 65);
-  public static final Vector2 READY_LINEAR_IMPULSE = new Vector2(0, 55);
-  public static final Vector2 ATTACK_DISTANCE = new Vector2(15, 0);
-
-  private boolean bouncing;
-  private boolean attacking;
-
-  public Enemy(Body body) {
-    super(body);
+  protected enum State {
+    IDLE, MOVING, ATTACKING, DYING;
   }
 
-  @Override
-  public void act(float delta) {
-    super.act(delta);
+  private static final String TAG = Enemy.class.getSimpleName();
 
-    if (!isAttacking() && !isBouncing()) {
-      bounceInPlace();
-    }
+  protected Hero target;
+  private State state;
+  private float nearThreshold;
+  protected boolean attacked;
+
+  public Enemy(float x, float y, float width, float height) {
+    super(x, y, width, height);
   }
-
-  @Override
-  public EnemyData getUserData() {
-    return (EnemyData) userData;
-  }
-
+  
   /**
-   * Returns true if the enemy body is bouncing off the ground
-   * 
-   * @return true if the enemy body is bouncing off the ground
-   */
-  public boolean isBouncing() {
-    return bouncing;
-  }
-
-  /**
-   * Sets the bouncing state
-   * 
-   * @param bouncing set to true if the enemy body is bouncing off the ground
-   */
-  private void setBouncing(boolean bouncing) {
-    this.bouncing = bouncing;
-  }
-
-  /**
-   * Applies a linear impulse on the body to make it bounce in place
-   */
-  public void bounceInPlace() {
-    Gdx.app.log("Enemy", "Bounce in place!");
-    bounce(getUserData().getReadyLinearImpulse());
-  }
-
-  /**
-   * Applies a linear impulse on the body to make it bounce
-   * 
-   * @param linearImpulse
-   */
-  public void bounce(Vector2 linearImpulse) {
-    Gdx.app.log("Enemy", "Bounce!");
-    setBouncing(true);
-    body.applyLinearImpulse(linearImpulse, body.getWorldCenter(), true);
-  }
-
-  /**
-   * Disables the bouncing state
-   */
-  public void landed() {
-    Gdx.app.log("Enemy", "Landed.");
-    setBouncing(false);
-  }
-
-  /**
-   * Returns true if the enemy is attacking
-   * 
-   * @return true if the enemy is attacking
-   */
-  public boolean isAttacking() {
-    return attacking;
-  }
-
-  /**
-   * Sets the attacking state
-   * 
-   * @param true if enemy is attacking
-   */
-  private void setAttacking(boolean attacking) {
-    this.attacking = attacking;
-  }
-
-  /**
-   * Applies a linear impulse to the body to attack
-   */
-  public void attack() {
-    Gdx.app.log("Enemy", "Attack!");
-    setAttacking(true);
-    bounce(getUserData().getLinearImpulse());
-  }
-
-  /**
-   * Returns true if the enemy is near the target based on the given threshold
+   * Sets the target GameActor of the enemy
    * 
    * @param target
-   * @param threshold
+   */
+
+  public void setTarget(Hero target) {
+    this.target = target;
+  }
+
+  /**
+   * @return the state
+   */
+  protected State getState() {
+    return state;
+  }
+
+  /**
+   * @param state the state to set
+   */
+  protected void setState(State state) {
+    this.state = state;
+  }
+
+  /**
+   * Returns true if the enemy's state is idle
+   * 
+   * @return true if the enemy's state is idle
+   */
+  public boolean isStateIdle() {
+    return getState() == State.IDLE;
+  }
+
+  /**
+   * Sets the state of the enemy to idle
+   */
+  public void setStateIdle() {
+    setState(State.IDLE);
+  }
+
+  /**
+   * Returns true if the enemy's state is moving
+   * 
+   * @return true if the enemy's state is moving
+   */
+  public boolean isStateMoving() {
+    return getState() == State.MOVING;
+  }
+
+  /**
+   * Sets the state of the enemy to moving
+   */
+  public void setStateMoving() {
+    setState(State.MOVING);
+  }
+
+  /**
+   * Returns true if the enemy's state is attacking
+   * 
+   * @return true if the enemy's state is attacking
+   */
+  public boolean isStateAttacking() {
+    return getState() == State.ATTACKING;
+  }
+
+  /**
+   * Returns true if the enemy's state is dying
+   * 
+   * @return true if the enemy's state is dying
+   */
+  public boolean isStateDying() {
+    return getState() == State.DYING;
+  }
+  
+  /**
+   * Sets the state of the enemy to dying
+   */
+  public void setStateDying() {
+    setState(State.DYING);
+  }
+  
+  /**
+   * @return true if the enemy has attacked and harmed the target
+   */
+  public boolean attacked() {
+    return attacked;
+  }
+
+  /**
+   * Sets if the enemy has attacked and harmed the target
+   * @param flag to indicate that the enemy has attacked and harmed the target
+   */
+  public void setAttacked(boolean attacked) {
+    this.attacked = attacked;
+  }
+
+  /**
+   * Returns true if the velocity of the enemy is greater or less than 0
+   * 
    * @return
    */
-  public boolean isNear(GameActor target) {
-    Vector2 targetPos = target.getBodyPosition();
-    UserData targetData = target.getUserData();
-    Vector2 attackDistance = getUserData().getAttackDistance();
-
-    float targetX = targetPos.x + targetData.getWidth();
-    float distanceX = Math.abs(targetX - body.getPosition().x);
-
-    return distanceX <= attackDistance.x;
+  protected boolean isMoving() {
+    return velocity.x != 0 || velocity.y != 0;
   }
+
+  /**
+   * Returns true if the target is within the distance threshold of the enemy
+   * 
+   * @return
+   */
+  protected boolean isNearTarget() {
+    return Math.abs(getX() - target.getX()) <= nearThreshold;
+  }
+
+  /**
+   * @param nearThreshold the nearThreshold to set
+   */
+  public void setNearThreshold(float nearThreshold) {
+    this.nearThreshold = nearThreshold;
+  }
+
 }

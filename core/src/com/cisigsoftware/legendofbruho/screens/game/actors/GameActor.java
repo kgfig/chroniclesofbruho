@@ -1,48 +1,99 @@
 /**
- * Copyright 2015 CISIG Software Labs Inc.
- * All Rights Reserved.
+ * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
 package com.cisigsoftware.legendofbruho.screens.game.actors;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.cisigsoftware.legendofbruho.screens.game.actors.data.UserData;
 
 /**
  * @author kg
  *
  */
-public abstract class GameActor extends Actor {
+public abstract class GameActor extends PhysicsActor {
 
-  protected Body body;
-  protected UserData userData;
-  
-  public GameActor(Body body) {
-    this.body = body;
-    this.userData = (UserData) body.getUserData();
+  private static final String TAG = GameActor.class.getSimpleName();
+
+  protected float hp, maxHp;
+  protected float damage;
+
+  public GameActor() {
+    super();
+  }
+
+  public GameActor(float x, float y, float width, float height) {
+    super(x, y, width, height);
+
+    initStats();
+  }
+
+  private void initStats() {
+    hp = 0;
+    maxHp = 0;
+    damage = 0;
   }
 
   /**
-   * Override this method to get the specific user data instance
-   * @return the user data of the body
+   * Returns true if the actor has remaining HP
+   * 
+   * @return true if the actor has remaining HP
    */
-  public abstract UserData getUserData();
+  public boolean hasHp() {
+    return getHp() > 0;
+  }
 
   /**
-   * Returns the position of the body
-   * @return position of the body
+   * Called when actor is hurt to reduce his HP
+   * 
+   * @param damage
    */
-  public Vector2 getBodyPosition() {
-    return body.getPosition();
+  public void hurt(float damage) {
+    if (hp - damage >= 0)
+      hp = hp - damage;
+    else
+      hp = 0;
+    Gdx.app.log(TAG, "Got hurt with " + damage + " damage. New hp=" + hp);
   }
-  
+
   /**
-   * Removes the body from the world
+   * @return the hp
    */
-  public void destroy() {
-    Gdx.app.log("GameActor", "Destroy body of type " + userData.getDataType());
-    body.getWorld().destroyBody(body);
+  public float getHp() {
+    return hp;
   }
+
+  /**
+   * @param hp the hp to set
+   */
+  public void setHp(float hp) {
+    this.hp = hp;
+  }
+
+  /**
+   * @return the maxHp
+   */
+  public float getMaxHp() {
+    return maxHp;
+  }
+
+  /**
+   * @param maxHp the maxHp to set
+   */
+  public void setMaxHp(float maxHp) {
+    this.maxHp = maxHp;
+  }
+
+  /**
+   * @return the damage
+   */
+  public float getDamage() {
+    return damage;
+  }
+
+  /**
+   * @param damage the damage to set
+   */
+  public void setDamage(float damage) {
+    this.damage = damage;
+  }
+
 }
