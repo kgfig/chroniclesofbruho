@@ -1,13 +1,14 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game.actors;
+package com.cisigsoftware.legendofbruho.gamescreen.actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.cisigsoftware.legendofbruho.screens.game.Level;
+import com.cisigsoftware.legendofbruho.gamescreen.Level;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 
 /**
  * @author kg

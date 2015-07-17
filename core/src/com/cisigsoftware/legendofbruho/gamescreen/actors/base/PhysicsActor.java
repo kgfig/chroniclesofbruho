@@ -1,14 +1,15 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game.actors;
+package com.cisigsoftware.legendofbruho.gamescreen.actors.base;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
-import com.cisigsoftware.legendofbruho.screens.game.Level;
+import com.cisigsoftware.legendofbruho.gamescreen.Level;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 
 /**
  * @author kg
@@ -16,7 +17,7 @@ import com.cisigsoftware.legendofbruho.screens.game.Level;
  */
 public abstract class PhysicsActor extends BoundedActor {
 
-  private static final String TAG = PhysicsActor.class.getSimpleName();
+//  private static final String TAG = PhysicsActor.class.getSimpleName();
 
   // May have to turn these to instance variables
   private static final float DAMP = 0.9f; // smooth out movement so he won't stop abruptly, ignore

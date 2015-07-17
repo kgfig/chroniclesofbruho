@@ -39,7 +39,7 @@ public class Assets extends AssetManager {
     load(filename, Pixmap.class);
   }
   
-  public void loadParticlEffect(String filename) {
+  public void loadParticleEffect(String filename) {
     load(filename, ParticleEffect.class);
   }
   

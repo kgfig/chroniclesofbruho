@@ -1,12 +1,11 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens;
+package com.cisigsoftware.legendofbruho.gamescreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.cisigsoftware.legendofbruho.screens.game.GameStage;
 
 /**
  * @author kg
@@ -14,10 +13,10 @@ import com.cisigsoftware.legendofbruho.screens.game.GameStage;
  */
 public class GameScreen implements Screen {
 
-  protected GameStage stage;
+  protected World stage;
 
   public GameScreen() {
-    stage = new GameStage();
+    stage = new World();
   }
 
   @Override

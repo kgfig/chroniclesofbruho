@@ -1,7 +1,7 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game;
+package com.cisigsoftware.legendofbruho.gamescreen;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.Map;
  * @author kg
  *
  */
-public class HeroController {
+public class Controls {
 
   public enum Keys {
     LEFT, RIGHT, JUMP, FIRE
@@ -25,7 +25,7 @@ public class HeroController {
     keys.put(Keys.FIRE, false);
   }
 
-  public HeroController() {}
+  public Controls() {}
 
   private void setPressed(Keys key, boolean pressed) {
     keys.put(key, pressed);

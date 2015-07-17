@@ -5,7 +5,7 @@ package com.cisigsoftware.legendofbruho;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.cisigsoftware.legendofbruho.screens.GameScreen;
+import com.cisigsoftware.legendofbruho.gamescreen.GameScreen;
 
 /**
  * @author kg

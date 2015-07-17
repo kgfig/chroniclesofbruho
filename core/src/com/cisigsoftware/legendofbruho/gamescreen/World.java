@@ -1,7 +1,7 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game;
+package com.cisigsoftware.legendofbruho.gamescreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -9,18 +9,19 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
-import com.cisigsoftware.legendofbruho.screens.game.actors.Block;
-import com.cisigsoftware.legendofbruho.screens.game.actors.Enemy;
-import com.cisigsoftware.legendofbruho.screens.game.actors.Hero;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Hero;
 import com.cisigsoftware.legendofbruho.utils.Constants;
 
 /**
  * @author kg
  *
  */
-public class GameStage extends Stage {
+public class World extends Stage {
 
-  private static final String TAG = GameStage.class.getSimpleName();
+  private static final String TAG = World.class.getSimpleName();
+  
   public static final float WORLD_WIDTH = 16f;
   public static final float WORLD_HALF = WORLD_WIDTH / 2f;
   public static final float WORLD_HEIGHT = 9f;
@@ -32,11 +33,11 @@ public class GameStage extends Stage {
   private Array<Enemy> enemies;
 
   private Hero hero;
-  private HeroController controller;
+  private Controls controller;
   private long jumpingPressedTime;
   private boolean jumpingPressed;
 
-  public GameStage() {
+  public World() {
     super();
 
     createLevels();
@@ -45,8 +46,10 @@ public class GameStage extends Stage {
     setCameraViewport();
     setDebugAll(true);
 
-    controller = new HeroController();
+    controller = new Controls();
     Gdx.input.setInputProcessor(this);
+    
+    Gdx.app.log(TAG, "Created World.");
   }
 
   /**
@@ -54,12 +57,12 @@ public class GameStage extends Stage {
    */
   private void createLevels() {
     levels = new Array<Level>();
-    levels.add(new Level(Constants.DEMO_LEVEL1));
-    levels.add(new Level(Constants.DEMO_LEVEL2));
+//    levels.add(new Level(Constants.DEMO_LEVEL1));
+//    levels.add(new Level(Constants.DEMO_LEVEL2));
     levels.add(new Level(Constants.DEMO_LEVEL3));
     levels.add(new Level(Constants.DEMO_LEVEL4));
     levels.add(new Level(Constants.DEMO_LEVEL5));
-    levels.add(new Level(Constants.DEMO_LEVEL6));
+//    levels.add(new Level(Constants.DEMO_LEVEL6));
   }
 
 
@@ -154,9 +157,9 @@ public class GameStage extends Stage {
       controller.leftPressed();
     if (keyCode == Keys.DPAD_RIGHT)
       controller.rightPressed();
-    if (keyCode == Keys.Z)
+    if (keyCode == Keys.S)
       controller.jumpPressed();
-    if (keyCode == Keys.X)
+    if (keyCode == Keys.A)
       controller.firePressed();
     return true;
 
@@ -168,11 +171,11 @@ public class GameStage extends Stage {
       controller.leftReleased();
     if (keyCode == Keys.DPAD_RIGHT)
       controller.rightReleased();
-    if (keyCode == Keys.Z) {
+    if (keyCode == Keys.S) {
       controller.jumpReleased();
       jumpingPressed = false;
     }
-    if (keyCode == Keys.X)
+    if (keyCode == Keys.A)
       controller.fireReleased();
     return true;
   }

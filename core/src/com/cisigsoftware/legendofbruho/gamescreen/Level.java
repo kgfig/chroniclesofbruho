@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game;
+package com.cisigsoftware.legendofbruho.gamescreen;
 
 import com.badlogic.gdx.utils.Array;
-import com.cisigsoftware.legendofbruho.screens.game.actors.Block;
-import com.cisigsoftware.legendofbruho.screens.game.actors.BouncingEnemy;
-import com.cisigsoftware.legendofbruho.screens.game.actors.Enemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.StaticEnemy;
 
 /**
  * from:
@@ -37,7 +37,7 @@ public class Level {
             blocks[x][y] = new Block(x, y);
             break;
           case 3:
-            enemies.add(new BouncingEnemy(this, x, y));
+            enemies.add(new StaticEnemy(this, x, y));
             break;
           case 4:
             blocks[x][y] = new Block(x, y);

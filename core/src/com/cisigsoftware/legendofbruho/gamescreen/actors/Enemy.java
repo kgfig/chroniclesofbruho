@@ -1,7 +1,10 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game.actors;
+package com.cisigsoftware.legendofbruho.gamescreen.actors;
+
+import com.badlogic.gdx.Gdx;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 
 /**
  * @author kg
@@ -12,18 +15,33 @@ public abstract class Enemy extends GameActor {
   protected enum State {
     IDLE, MOVING, ATTACKING, DYING;
   }
+  
+  protected enum Type {
+    STATIC, BOUNCING, BOMB
+  }
 
   private static final String TAG = Enemy.class.getSimpleName();
 
   protected Hero target;
   private State state;
+  private Type type;
   private float nearThreshold;
   protected boolean attacked;
 
-  public Enemy(float x, float y, float width, float height) {
+  public Enemy(Type type, float x, float y, float width, float height) {
     super(x, y, width, height);
+    this.type = type;
+    
+    Gdx.app.log(TAG, String.format("Created enemy at position (%f, %f)", x, y));
   }
-  
+
+  /**
+   * @return the type
+   */
+  public Type getType() {
+    return type;
+  }
+
   /**
    * Sets the target GameActor of the enemy
    * 
@@ -97,14 +115,14 @@ public abstract class Enemy extends GameActor {
   public boolean isStateDying() {
     return getState() == State.DYING;
   }
-  
+
   /**
    * Sets the state of the enemy to dying
    */
   public void setStateDying() {
     setState(State.DYING);
   }
-  
+
   /**
    * @return true if the enemy has attacked and harmed the target
    */
@@ -114,6 +132,7 @@ public abstract class Enemy extends GameActor {
 
   /**
    * Sets if the enemy has attacked and harmed the target
+   * 
    * @param flag to indicate that the enemy has attacked and harmed the target
    */
   public void setAttacked(boolean attacked) {

@@ -1,11 +1,13 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.screens.game.actors;
+package com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
-import com.cisigsoftware.legendofbruho.screens.game.Level;
+import com.cisigsoftware.legendofbruho.gamescreen.Level;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 
 /**
  * @author kg
@@ -26,7 +28,7 @@ public class BouncingEnemy extends Enemy {
   private static final float VX = 2f;
 
   public BouncingEnemy(Level level, float x, float y) {
-    super(x, y, SIZE, SIZE);
+    super(Type.BOUNCING, x, y, SIZE, SIZE);
 
     setNearThreshold(NEAR_DISTANCE);
     setGrounded(true);
@@ -37,7 +39,7 @@ public class BouncingEnemy extends Enemy {
     setDamage(DAMAGE);
     setLevel(level);
 
-    Gdx.app.log(TAG, "Initialized BouncingEnemy. HP=" + getHp() + "\tdamage=" + getDamage());
+    Gdx.app.log(TAG, String.format("Created BouncingEnemy with HP=%f\tDamage=%f.", getHp(), getDamage()));
   }
 
   @Override
