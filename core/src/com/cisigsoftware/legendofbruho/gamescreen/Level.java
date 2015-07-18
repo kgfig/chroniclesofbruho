@@ -6,13 +6,10 @@ package com.cisigsoftware.legendofbruho.gamescreen;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Instruction;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.StaticEnemy;
 
 /**
- * from:
- * https://github.com/obviam/star-assault/blob/part4/star-assault/src/net/obviam/starassault/model/
- * Level.java
- * 
  * @author kg
  *
  */
@@ -22,11 +19,16 @@ public class Level {
   private int height;
   private Block[][] blocks;
   private Array<Enemy> enemies;
+  private Array<Instruction> instructions;
   private boolean complete;
 
-  public Level(int[][] matrix) {
-    this.width = matrix[0].length;
-    this.height = matrix.length;
+  public Level(int[][] matrix, String[] instructionText) {
+    // Not complete by default
+    complete = false;
+
+    // Create enemies and build the terrain
+    width = matrix[0].length;
+    height = matrix.length;
     blocks = new Block[width][height];
     enemies = new Array<Enemy>();
 
@@ -49,7 +51,15 @@ public class Level {
         }
       }
     }
-    complete = false;
+
+    // Add level instructions
+    instructions = new Array<Instruction>();
+
+    for (String text : instructionText) {
+      Instruction instruction = new Instruction(text, 3, 5);
+      instruction.setWidth(4);
+      instructions.add(instruction);
+    }
   }
 
   /**
@@ -120,6 +130,20 @@ public class Level {
   }
 
   /**
+   * @return the instructions in the level
+   */
+  public Array<Instruction> getInstructions() {
+    return instructions;
+  }
+
+  /**
+   * @param instructions the instructions for the level
+   */
+  public void setInstructions(Array<Instruction> instructions) {
+    this.instructions = instructions;
+  }
+
+  /**
    * Returns the collidable blocks based on the given coordinates
    * 
    * @param startX left x
@@ -183,6 +207,10 @@ public class Level {
         if (block != null)
           block.remove();
       }
+    }
+
+    for (Instruction instruction : instructions) {
+      instruction.remove();
     }
   }
 }

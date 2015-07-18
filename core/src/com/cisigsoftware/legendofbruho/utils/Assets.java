@@ -3,55 +3,72 @@
  */
 package com.cisigsoftware.legendofbruho.utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /**
  * @author kg
  *
  */
-public class Assets extends AssetManager {
+public class Assets {
 
-  public Assets() {
-    super();
+  private static final String TAG = Assets.class.getSimpleName();
+
+  /*
+   * Assets
+   */
+  public static Skin gameSkin, loadingSkin;
+  
+  /*
+   * Asset descriptors
+   */
+  private static AssetManager manager;
+  private static final AssetDescriptor<Skin> gameSkinDesc =
+      new AssetDescriptor<Skin>("assets/skin/game.json", Skin.class);
+  private static final AssetDescriptor<Skin> loadingSkinDesc =
+      new AssetDescriptor<Skin>("assets/skin/loading.json", Skin.class);
+
+  public Assets() {}
+
+  public static void loadSplashAssets() {
+    if (manager == null)
+      manager = new AssetManager();
+    
+    load(loadingSkinDesc);
+    manager.finishLoading();
+    
+    loadingSkin = get(loadingSkinDesc);
   }
 
-  public void loadTexture(String filename) {
-    load(filename, Texture.class);
+  public static void loadGameAssets() {
+    if (manager == null)
+      manager = new AssetManager();
+    
+    load(gameSkinDesc);
   }
-  
-  public void loadAtlas(String filename) {
-    load(filename, TextureAtlas.class);
+
+  public static void gameAssetsLoaded() {
+    gameSkin = get(gameSkinDesc);
   }
-  
-  public void loadSkin(String filename) {
-    load(filename, Skin.class);
+
+  public static boolean loading() {
+    return !manager.update();
   }
-  
-  public void loadPixmap(String filename) {
-    load(filename, Pixmap.class);
+
+  public static float getProgress() {
+    return manager.getProgress();
   }
-  
-  public void loadParticleEffect(String filename) {
-    load(filename, ParticleEffect.class);
+
+  private static <T> T get(AssetDescriptor<T> assetDescriptor) {
+    return manager.get(assetDescriptor);
   }
-  
-  public void loadFont(String filename) {
-    load(filename, BitmapFont.class);
+
+  private static <T> void load(AssetDescriptor<T> assetDescriptor) {
+    Gdx.app.log(TAG, String.format("Load: %s",
+        Gdx.files.internal(assetDescriptor.fileName).file().getAbsolutePath()));
+    manager.load(assetDescriptor);
   }
-  
-  public void loadMusic(String filename) {
-    load(filename, Music.class);
-  }
-  
-  public void loadSound(String filename) {
-    load(filename, Sound.class);
-  }
+
 }

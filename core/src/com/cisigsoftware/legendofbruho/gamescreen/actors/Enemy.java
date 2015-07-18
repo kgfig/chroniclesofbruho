@@ -3,7 +3,6 @@
  */
 package com.cisigsoftware.legendofbruho.gamescreen.actors;
 
-import com.badlogic.gdx.Gdx;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 
 /**
@@ -20,6 +19,7 @@ public abstract class Enemy extends GameActor {
     STATIC, BOUNCING, BOMB
   }
 
+  @SuppressWarnings("unused")
   private static final String TAG = Enemy.class.getSimpleName();
 
   protected Hero target;
@@ -31,8 +31,6 @@ public abstract class Enemy extends GameActor {
   public Enemy(Type type, float x, float y, float width, float height) {
     super(x, y, width, height);
     this.type = type;
-    
-    Gdx.app.log(TAG, String.format("Created enemy at position (%f, %f)", x, y));
   }
 
   /**

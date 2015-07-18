@@ -4,14 +4,20 @@
  */
 package com.cisigsoftware.legendofbruho.utils;
 
+import com.badlogic.gdx.Gdx;
+
 /**
  * @author kg
  *
  */
 public class Constants {
 
-  public static final int SCREEN_WIDTH = 1280;
-  public static final int SCREEN_HEIGHT = 720;
+  public static final int SCREEN_WIDTH = Gdx.graphics.getWidth();
+  public static final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
+  
+  public static final String[] LVL1_INSTRUCTIONS = new String[] {
+    "This place is literally full of shit!\nWho's responsible for this mess?\n\nPress they < > keys to move." 
+  };
   
   public static final int[][] DEMO_LEVEL1 = new int[][] {
     {1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -24,6 +30,10 @@ public class Constants {
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
     
+  public static final String[] LVL2_INSTRUCTIONS = new String[] {
+    "Press A to jump."  
+  };
+    
   public static final int[][] DEMO_LEVEL2 = new int[][] {
     {1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -35,7 +45,11 @@ public class Constants {
     {1,0,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,1,0,0,1,1,4,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
       
-   public static final int[][] DEMO_LEVEL3 = new int[][] {
+  public static final String[] LVL3_INSTRUCTIONS = new String[]{
+      "Don't step on shit.\nThey're silent but deadly."
+  };
+  
+  public static final int[][] DEMO_LEVEL3 = new int[][] {
      {1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
      {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
      {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -45,6 +59,10 @@ public class Constants {
      {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
      {1,0,0,0,0,0,0,0,3,0,0,0,0,0,4,1},
      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
+
+   public static final String[] LVL4_INSTRUCTIONS = new String[]{
+         "Be careful. Slimy shit ahead."
+   };
      
    public static final int[][] DEMO_LEVEL4 = new int[][] {
      {1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -56,7 +74,11 @@ public class Constants {
      {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,1},
      {1,1,1,1,1,0,1,0,0,0,3,0,0,0,1,0,0,0,0,1,0,0,0,0,4,1},
      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
-   
+
+   public static final String[] LVL5_INSTRUCTIONS = new String[]{
+         "It's a ticking bomb of poop.\nRun before it explodes!"
+   };
+     
    public static final int[][] DEMO_LEVEL5 = new int[][] {
           {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
           {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -67,7 +89,28 @@ public class Constants {
           {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1},
           {1,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,3,0,1,1,1,1,1},
           {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
-        
+
+   public static final String[] LVL6_INSTRUCTIONS = new String[]{
+       "There's more of them lying around."
+   };
+   
+   public static final String[] LVL7_INSTRUCTIONS = new String[]{
+       "You can't jump on those.\nPress A to attack."
+   };
+   
+   public static final String[] LVL8_INSTRUCTIONS = new String[]{
+       "Run. Jump. Slash. Do what you want but don't get shit on your hair."
+   };
+   
+   public static final String[] LVL9_INSTRUCTIONS = new String[]{
+       "There's too many of them!"
+   };
+   
+   public static final String[] LVL10_INSTRUCTIONS = new String[]{
+       "You made it through! It looks like you're safe for now.",
+       "What's this? It could be useful."
+   };
+          
     public static final int[][] DEMO_LEVEL9 = new int[][] {
       {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,1,1,1,1},
       {1,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,0,1},

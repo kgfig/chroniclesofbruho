@@ -21,15 +21,16 @@ import com.cisigsoftware.legendofbruho.utils.Constants;
 public class World extends Stage {
 
   private static final String TAG = World.class.getSimpleName();
-  
+
   public static final float WORLD_WIDTH = 16f;
-  public static final float WORLD_HALF = WORLD_WIDTH / 2f;
   public static final float WORLD_HEIGHT = 9f;
+  public static final float WORLD_HALF = WORLD_WIDTH / 2f;
+
   private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 200ms
 
-  private OrthographicCamera camera;
+  public OrthographicCamera camera;
   private Array<Level> levels;
-  private Level currentLevel;
+  public Level currentLevel;
   private Array<Enemy> enemies;
 
   private Hero hero;
@@ -39,7 +40,9 @@ public class World extends Stage {
 
   public World() {
     super();
+  }
 
+  public void create() {
     createLevels();
     createHero();
     setCurrentLevel();
@@ -48,7 +51,7 @@ public class World extends Stage {
 
     controller = new Controls();
     Gdx.input.setInputProcessor(this);
-    
+
     Gdx.app.log(TAG, "Created World.");
   }
 
@@ -57,12 +60,13 @@ public class World extends Stage {
    */
   private void createLevels() {
     levels = new Array<Level>();
-//    levels.add(new Level(Constants.DEMO_LEVEL1));
-//    levels.add(new Level(Constants.DEMO_LEVEL2));
-    levels.add(new Level(Constants.DEMO_LEVEL3));
-    levels.add(new Level(Constants.DEMO_LEVEL4));
-    levels.add(new Level(Constants.DEMO_LEVEL5));
-//    levels.add(new Level(Constants.DEMO_LEVEL6));
+    levels.add(new Level(Constants.DEMO_LEVEL1, Constants.LVL1_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL2, Constants.LVL2_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL3, Constants.LVL3_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL4, Constants.LVL4_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL5, Constants.LVL5_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL5, Constants.LVL6_INSTRUCTIONS));
+    // levels.add(new Level(Constants.DEMO_LEVEL6, Constants.LVL1_INSTRUCTIONS));
   }
 
 
@@ -78,11 +82,13 @@ public class World extends Stage {
    * Sets the current level for the game actors and builds the level terrain
    */
   private void setCurrentLevel() {
+    // Set the level for the hero
     currentLevel = getNextLevel();
     hero.setLevel(currentLevel);
     hero.setPosition(1, WORLD_HEIGHT - 1);
     addActor(hero);
 
+    // Add the enemies
     enemies = currentLevel.getEnemies();
     for (Enemy enemy : enemies) {
       enemy.setTarget(hero);
@@ -90,6 +96,7 @@ public class World extends Stage {
       addActor(enemy);
     }
 
+    // Build the terrain
     Block[][] blocks = currentLevel.getBlocks();
 
     for (Block[] blockCol : blocks) {
@@ -99,7 +106,7 @@ public class World extends Stage {
           addActor(block);
         }
       }
-    }
+    }    
   }
 
   /**
@@ -136,7 +143,7 @@ public class World extends Stage {
     currentLevel.remove();
     enemies.clear();
   }
-  
+
   private void resetCameraPosition() {
     camera.position.x = WORLD_HALF;
   }
