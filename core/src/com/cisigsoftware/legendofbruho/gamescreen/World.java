@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Hero;
-import com.cisigsoftware.legendofbruho.utils.Constants;
 
 /**
  * @author kg
@@ -29,24 +28,21 @@ public class World extends Stage {
   private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 200ms
 
   public OrthographicCamera camera;
-  private Array<Level> levels;
   public Level currentLevel;
   private Array<Enemy> enemies;
 
-  private Hero hero;
+  Hero hero;
   private Controls controller;
   private long jumpingPressedTime;
   private boolean jumpingPressed;
 
   public World() {
     super();
+    setCameraViewport();
   }
 
   public void create() {
-    createLevels();
     createHero();
-    setCurrentLevel();
-    setCameraViewport();
     setDebugAll(true);
 
     controller = new Controls();
@@ -54,21 +50,6 @@ public class World extends Stage {
 
     Gdx.app.log(TAG, "Created World.");
   }
-
-  /**
-   * Creates the current level
-   */
-  private void createLevels() {
-    levels = new Array<Level>();
-    levels.add(new Level(Constants.DEMO_LEVEL1, Constants.LVL1_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL2, Constants.LVL2_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL3, Constants.LVL3_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL4, Constants.LVL4_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL5, Constants.LVL5_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL5, Constants.LVL6_INSTRUCTIONS));
-    // levels.add(new Level(Constants.DEMO_LEVEL6, Constants.LVL1_INSTRUCTIONS));
-  }
-
 
   /**
    * Creates the hero and assigns to enemies
@@ -81,9 +62,9 @@ public class World extends Stage {
   /**
    * Sets the current level for the game actors and builds the level terrain
    */
-  private void setCurrentLevel() {
+  public void setCurrentLevel(Level newLevel) {
     // Set the level for the hero
-    currentLevel = getNextLevel();
+    currentLevel = newLevel;
     hero.setLevel(currentLevel);
     hero.setPosition(1, WORLD_HEIGHT - 1);
     addActor(hero);
@@ -106,45 +87,16 @@ public class World extends Stage {
           addActor(block);
         }
       }
-    }    
-  }
-
-  /**
-   * Returns the next unfinished level
-   * 
-   * @return the next unfinished level
-   */
-  private boolean hasNextLevel() {
-    return getNextLevel() != null;
-  }
-
-
-  /**
-   * Returns the next unfinished level
-   * 
-   * @return the next unfinished level
-   */
-  private Level getNextLevel() {
-    if (currentLevel == null)
-      return levels.get(0);
-    else {
-      for (Level level : levels) {
-        if (!level.isComplete()) {
-          return level;
-        }
-      }
     }
-
-    return null;
   }
 
-  private void clearWorld() {
+  public void clearWorld() {
     hero.remove();
     currentLevel.remove();
     enemies.clear();
   }
 
-  private void resetCameraPosition() {
+  public void resetCameraPosition() {
     camera.position.x = WORLD_HALF;
   }
 
@@ -190,62 +142,51 @@ public class World extends Stage {
   @Override
   public void act(float delta) {
     super.act(delta);
-
-    if (currentLevel.isComplete()) {
-      if (hasNextLevel()) {
-        clearWorld();
-        setCurrentLevel();
-        resetCameraPosition();
+    
+    // Show enemies on standby when they are within the camera's viewport
+    for (Enemy enemy : enemies) {
+      if (enemy.getX() >= camera.position.x - WORLD_HALF
+          && enemy.getX() <= camera.position.x + WORLD_HALF) {
+        if (!enemy.isStateMoving()) {
+          enemy.setStateMoving();
+        }
       } else {
-        // You win!
+        enemy.setStateIdle();
       }
+    }
+
+    if (controller.isJumpPressed()) {
+      if (!hero.isJumping()) {
+        jumpingPressed = true;
+        jumpingPressedTime = System.currentTimeMillis();
+        hero.jump();
+        hero.setGrounded(false);
+      } else {
+        long pressedDuration = System.currentTimeMillis() - jumpingPressedTime;
+
+        if (jumpingPressed && pressedDuration >= LONG_JUMP_PRESS) {
+          jumpingPressed = false;
+        } else if (jumpingPressed) {
+          hero.propelUp();
+        }
+      }
+    }
+
+    if (controller.isLeftPressed()) {
+      if (!hero.isJumping())
+        hero.walkLeft();
+      else
+        hero.moveLeft();
+    } else if (controller.isRightPressed()) {
+      if (!hero.isJumping())
+        hero.walkRight();
+      else
+        hero.moveRight();
     } else {
-
-      // Show enemies on standby when they are within the camera's viewport
-      for (Enemy enemy : enemies) {
-        if (enemy.getX() >= camera.position.x - WORLD_HALF
-            && enemy.getX() <= camera.position.x + WORLD_HALF) {
-          if (!enemy.isStateMoving()) {
-            enemy.setStateMoving();
-          }
-        } else {
-          enemy.setStateIdle();
-        }
+      if (!hero.isJumping()) {
+        hero.idle();
       }
-
-      if (controller.isJumpPressed()) {
-        if (!hero.isJumping()) {
-          jumpingPressed = true;
-          jumpingPressedTime = System.currentTimeMillis();
-          hero.jump();
-          hero.setGrounded(false);
-        } else {
-          long pressedDuration = System.currentTimeMillis() - jumpingPressedTime;
-
-          if (jumpingPressed && pressedDuration >= LONG_JUMP_PRESS) {
-            jumpingPressed = false;
-          } else if (jumpingPressed) {
-            hero.propelUp();
-          }
-        }
-      }
-
-      if (controller.isLeftPressed()) {
-        if (!hero.isJumping())
-          hero.walkLeft();
-        else
-          hero.moveLeft();
-      } else if (controller.isRightPressed()) {
-        if (!hero.isJumping())
-          hero.walkRight();
-        else
-          hero.moveRight();
-      } else {
-        if (!hero.isJumping()) {
-          hero.idle();
-        }
-        hero.stopWalking();
-      }
+      hero.stopWalking();
     }
   }
 
@@ -290,6 +231,13 @@ public class World extends Stage {
     if (y2 >= currentLevel.getHeight()) {
       y2 = currentLevel.getHeight() - 1;
     }
+  }
+
+  /**
+   * @return the currentLevel
+   */
+  public Level getCurrentLevel() {
+    return currentLevel;
   }
 
 }

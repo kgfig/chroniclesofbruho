@@ -16,7 +16,7 @@ public class Constants {
   public static final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
   
   public static final String[] LVL1_INSTRUCTIONS = new String[] {
-    "This place is literally full of shit!\nWho's responsible for this mess?\n\nPress they < > keys to move." 
+    "This place is literally full of shit!\nWho's responsible for this mess?\n\nPress the < > keys to move." 
   };
   
   public static final int[][] DEMO_LEVEL1 = new int[][] {
@@ -31,7 +31,7 @@ public class Constants {
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
     
   public static final String[] LVL2_INSTRUCTIONS = new String[] {
-    "Press A to jump."  
+    "Press S to jump."  
   };
     
   public static final int[][] DEMO_LEVEL2 = new int[][] {

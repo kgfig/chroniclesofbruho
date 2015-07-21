@@ -56,7 +56,7 @@ public class Level {
     instructions = new Array<Instruction>();
 
     for (String text : instructionText) {
-      Instruction instruction = new Instruction(text, 3, 5);
+      Instruction instruction = new Instruction(text, 3.5f, 5);
       instruction.setWidth(4);
       instructions.add(instruction);
     }
@@ -209,8 +209,8 @@ public class Level {
       }
     }
 
-    for (Instruction instruction : instructions) {
-      instruction.remove();
-    }
+//    for (Instruction instruction : instructions) {
+//      instruction.remove();
+//    }
   }
 }

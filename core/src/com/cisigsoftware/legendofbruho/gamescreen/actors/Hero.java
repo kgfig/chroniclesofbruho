@@ -32,13 +32,14 @@ public class Hero extends GameActor {
                                            // while walking or running
   private static final float ACCELERATION = 20f; // for walking and running
   private static final float MAX_JUMP_SPEED = 7f; // terminal and maximum velocity when jumping
-  private static final float SIZE = 0.5f;
+  private static final float WIDTH = 0.5f;
+  private static final float HEIGHT = 0.5f;
 
   private State state;
   private Block goal;
 
   public Hero(Vector2 position) {
-    super(position.x, position.y, SIZE, SIZE);
+    super(position.x, position.y, WIDTH, HEIGHT);
 
     state = State.IDLE;
     setGrounded(false);
