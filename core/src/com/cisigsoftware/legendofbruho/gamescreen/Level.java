@@ -7,7 +7,8 @@ import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Instruction;
-import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.StaticEnemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.CrawlingEnemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.TimedBombEnemy;
 
 /**
  * @author kg
@@ -39,9 +40,12 @@ public class Level {
             blocks[x][y] = new Block(x, y);
             break;
           case 3:
-            enemies.add(new StaticEnemy(this, x, y));
+            enemies.add(new CrawlingEnemy(this, x, y));
             break;
           case 4:
+            enemies.add(new TimedBombEnemy(this, x, y));
+            break;
+          case 99:
             blocks[x][y] = new Block(x, y);
             blocks[x][y].setGoal(true);
             break;

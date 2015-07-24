@@ -17,7 +17,7 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
  */
 public abstract class PhysicsActor extends BoundedActor {
 
-//  private static final String TAG = PhysicsActor.class.getSimpleName();
+  // private static final String TAG = PhysicsActor.class.getSimpleName();
 
   // May have to turn these to instance variables
   private static final float DAMP = 0.9f; // smooth out movement so he won't stop abruptly, ignore
@@ -51,6 +51,7 @@ public abstract class PhysicsActor extends BoundedActor {
     super(x, y, width, height);
     setPosition(x, y);
     setSize(width, height);
+    setOriginX(width / 2);
 
     initPhysicsProperties();
   }

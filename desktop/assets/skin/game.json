@@ -8,5 +8,6 @@ com.badlogic.gdx.graphics.Color: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	instruction: { font: opensans-light-28, fontColor: white }
+	timer: { font: opensans-light-28, fontColor: white }
 }
 }

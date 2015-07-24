@@ -81,10 +81,14 @@ public class BouncingEnemy extends Enemy {
        * Deal damage on the target upon collision
        */
       if (!isGrounded()) {
-        if (attacked) {
+        
+        // Unset attacked flag
+        if (!target.isDying() && attacked && !this.collidesBeside(target)) {
           setAttacked(false);
           Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
-        } else if (!target.isDying() && this.collidesBeside(target)) {
+        }
+        
+        if (!target.isDying() && this.collidesBeside(target) && !attacked) {
           setAttacked(true);
           target.hurt(damage);
           Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");

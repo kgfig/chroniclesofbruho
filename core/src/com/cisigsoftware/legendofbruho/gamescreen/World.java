@@ -63,12 +63,8 @@ public class World extends Stage {
    * Sets the current level for the game actors and builds the level terrain
    */
   public void setCurrentLevel(Level newLevel) {
-    // Set the level for the hero
     currentLevel = newLevel;
-    hero.setLevel(currentLevel);
-    hero.setPosition(1, WORLD_HEIGHT - 1);
-    addActor(hero);
-
+    
     // Add the enemies
     enemies = currentLevel.getEnemies();
     for (Enemy enemy : enemies) {
@@ -88,6 +84,11 @@ public class World extends Stage {
         }
       }
     }
+    
+    // Set the level for the hero
+    hero.setLevel(currentLevel);
+    hero.setPosition(1, WORLD_HEIGHT - 1);
+    addActor(hero);
   }
 
   public void clearWorld() {
@@ -147,7 +148,7 @@ public class World extends Stage {
     for (Enemy enemy : enemies) {
       if (enemy.getX() >= camera.position.x - WORLD_HALF
           && enemy.getX() <= camera.position.x + WORLD_HALF) {
-        if (!enemy.isStateMoving()) {
+        if (enemy.isStateIdle()) {
           enemy.setStateMoving();
         }
       } else {
