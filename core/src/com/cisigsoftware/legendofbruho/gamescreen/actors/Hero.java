@@ -54,10 +54,10 @@ public class Hero extends GameActor {
 
   @Override
   public void act(float delta) {
-    acceleration.y = gravity;
-
     super.act(delta);
 
+    acceleration.y = gravity;
+    
     if (isGrounded() && isJumping())
       idle();
 

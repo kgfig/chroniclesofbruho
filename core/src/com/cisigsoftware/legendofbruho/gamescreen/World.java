@@ -208,19 +208,19 @@ public class World extends Stage {
     // Check if bounds is correctly updated according to the actor's movement
     shapeRenderer.setProjectionMatrix(camera.combined);
 
-    shapeRenderer.begin(ShapeType.Line);
-    shapeRenderer.setColor(1, 1, 0, 1);
-    shapeRenderer.rect(hero.getBounds().x, hero.getBounds().y, hero.getBounds().width,
-        hero.getBounds().height);
-    shapeRenderer.end();
+//    shapeRenderer.begin(ShapeType.Line);
+//    shapeRenderer.setColor(1, 1, 0, 1);
+//    shapeRenderer.rect(hero.getBounds().x, hero.getBounds().y, hero.getBounds().width,
+//        hero.getBounds().height);
+//    shapeRenderer.end();
     
-    for (Enemy enemy : enemies) {
-      shapeRenderer.begin(ShapeType.Line);
-      shapeRenderer.setColor(1, 1, 0, 1);
-      shapeRenderer.rect(enemy.getBounds().x, enemy.getBounds().y, enemy.getBounds().width,
-          enemy.getBounds().height);
-      shapeRenderer.end();
-    }
+//    for (Enemy enemy : enemies) {
+//      shapeRenderer.begin(ShapeType.Line);
+//      shapeRenderer.setColor(1, 1, 0, 1);
+//      shapeRenderer.rect(enemy.getBounds().x, enemy.getBounds().y, enemy.getBounds().width,
+//          enemy.getBounds().height);
+//      shapeRenderer.end();
+//    }
   }
 
   /**

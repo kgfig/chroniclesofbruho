@@ -25,7 +25,7 @@ public class TimedBombEnemy extends Enemy {
   private static final float MAX_HP = 5;
   private static final float DAMAGE = 10;
 
-  private static final float NEAR_DISTANCE = 5f;
+  private static final float NEAR_DISTANCE = 5.5f;
   private static final int COUNTDOWN_IN_SEC = 3;
 
   private Action swellInPlace, explode;
