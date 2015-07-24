@@ -51,7 +51,6 @@ public abstract class PhysicsActor extends BoundedActor {
     super(x, y, width, height);
     setPosition(x, y);
     setSize(width, height);
-    setOriginX(width / 2);
 
     initPhysicsProperties();
   }

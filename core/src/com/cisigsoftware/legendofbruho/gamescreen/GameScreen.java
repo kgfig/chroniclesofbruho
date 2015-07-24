@@ -6,7 +6,6 @@ package com.cisigsoftware.legendofbruho.gamescreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.utils.Constants;
 
@@ -22,13 +21,11 @@ public class GameScreen implements Screen {
 
   protected World world;
   protected PixelStage pixelStage;
-  protected Vector3 pixelPos;
 
 
   public GameScreen() {
     world = new World();
     pixelStage = new PixelStage(world);
-    pixelPos = new Vector3(Constants.SCREEN_WIDTH / 2, Constants.SCREEN_HEIGHT / 2, 0);
   }
 
   @Override

@@ -25,7 +25,7 @@ public class TimedBombEnemy extends Enemy {
   private static final float MAX_HP = 5;
   private static final float DAMAGE = 10;
 
-  private static final float NEAR_DISTANCE = 6f;
+  private static final float NEAR_DISTANCE = 5f;
   private static final int COUNTDOWN_IN_SEC = 3;
 
   private Action swellInPlace, explode;
@@ -41,6 +41,7 @@ public class TimedBombEnemy extends Enemy {
     setHp(MAX_HP);
     setDamage(DAMAGE);
     setLevel(level);
+    setOriginX(SIZE / 2);
     setSwelling(false);
 
     Gdx.app.log(TAG,
@@ -150,10 +151,12 @@ public class TimedBombEnemy extends Enemy {
     // Then reset his collision box to his current position
     box.y = getY();
 
-    // Update his current position
+    // Update his current position and the bounds
     moveBy(velocity.x, velocity.y);
-    bounds.x = getX();
+    bounds.x = getX() + getOriginX() - ((getWidth() * getScaleX()) / 2);
     bounds.y = getY();
+    bounds.width = getWidth() * getScaleX();
+    bounds.height = getHeight() * getScaleY();
 
     // un-scale the velocity
     velocity.scl(1 / delta);
@@ -175,6 +178,9 @@ public class TimedBombEnemy extends Enemy {
     addAction(swellInPlace);
   }
 
+  /**
+   * Adds the action for the enemy to swell then explode when countdown is over
+   */
   private void swellToExplode() {
     // Remove previous actions
     removeAction(swellInPlace);
@@ -199,9 +205,4 @@ public class TimedBombEnemy extends Enemy {
     addAction(explode);
   }
 
-  @Override
-  public void scaleBy(float scaleX, float scaleY) {
-    super.scaleBy(scaleX, scaleY);
-    bounds.setSize(bounds.width * (1 + scaleX), bounds.height * (1 + scaleY));
-  }
 }

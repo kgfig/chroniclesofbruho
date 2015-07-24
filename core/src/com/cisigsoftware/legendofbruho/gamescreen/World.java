@@ -6,6 +6,8 @@ package com.cisigsoftware.legendofbruho.gamescreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -27,18 +29,20 @@ public class World extends Stage {
 
   private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 200ms
 
-  public OrthographicCamera camera;
-  public Level currentLevel;
+  OrthographicCamera camera;
+  Level currentLevel;
+  Hero hero;
   private Array<Enemy> enemies;
 
-  Hero hero;
   private Controls controller;
   private long jumpingPressedTime;
   private boolean jumpingPressed;
+  private ShapeRenderer shapeRenderer;
 
   public World() {
     super();
-    setCameraViewport();
+    createCamera();
+    shapeRenderer = new ShapeRenderer();
   }
 
   public void create() {
@@ -64,7 +68,7 @@ public class World extends Stage {
    */
   public void setCurrentLevel(Level newLevel) {
     currentLevel = newLevel;
-    
+
     // Add the enemies
     enemies = currentLevel.getEnemies();
     for (Enemy enemy : enemies) {
@@ -84,7 +88,7 @@ public class World extends Stage {
         }
       }
     }
-    
+
     // Set the level for the hero
     hero.setLevel(currentLevel);
     hero.setPosition(1, WORLD_HEIGHT - 1);
@@ -104,7 +108,7 @@ public class World extends Stage {
   /**
    * Set the camera viewport
    */
-  private void setCameraViewport() {
+  private void createCamera() {
     camera = new OrthographicCamera(WORLD_WIDTH, WORLD_HEIGHT);
     camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
     camera.update();
@@ -143,7 +147,7 @@ public class World extends Stage {
   @Override
   public void act(float delta) {
     super.act(delta);
-    
+
     // Show enemies on standby when they are within the camera's viewport
     for (Enemy enemy : enemies) {
       if (enemy.getX() >= camera.position.x - WORLD_HALF
@@ -200,6 +204,23 @@ public class World extends Stage {
       camera.position.x = hero.getX();
 
     camera.update();
+
+    // Check if bounds is correctly updated according to the actor's movement
+    shapeRenderer.setProjectionMatrix(camera.combined);
+
+    shapeRenderer.begin(ShapeType.Line);
+    shapeRenderer.setColor(1, 1, 0, 1);
+    shapeRenderer.rect(hero.getBounds().x, hero.getBounds().y, hero.getBounds().width,
+        hero.getBounds().height);
+    shapeRenderer.end();
+    
+    for (Enemy enemy : enemies) {
+      shapeRenderer.begin(ShapeType.Line);
+      shapeRenderer.setColor(1, 1, 0, 1);
+      shapeRenderer.rect(enemy.getBounds().x, enemy.getBounds().y, enemy.getBounds().width,
+          enemy.getBounds().height);
+      shapeRenderer.end();
+    }
   }
 
   /**

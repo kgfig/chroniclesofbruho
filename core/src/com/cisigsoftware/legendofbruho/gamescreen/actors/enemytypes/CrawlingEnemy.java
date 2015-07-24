@@ -39,6 +39,7 @@ public class CrawlingEnemy extends Enemy {
     setAttacked(false);
     setCrawling(false);
     setFacingLeft(true);
+    setOriginX(SIZE / 2);
 
     Gdx.app.log(TAG,
         String.format("Created StaticEnemy with HP=%f\tDamage=%f", getHp(), getDamage()));
@@ -168,6 +169,8 @@ public class CrawlingEnemy extends Enemy {
     moveBy(velocity.x, velocity.y);
     bounds.x = getX();
     bounds.y = getY();
+    bounds.width = getWidth();
+    bounds.height = getHeight();
 
     // un-scale the velocity
     velocity.scl(1 / delta);

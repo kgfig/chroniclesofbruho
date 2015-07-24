@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Instruction;
@@ -58,6 +59,7 @@ public class PixelStage extends Stage {
 
     win.setVisible(false);
     lose.setVisible(false);
+    lose.setVisible(false);
 
     addActor(win);
     addActor(lose);
@@ -85,12 +87,12 @@ public class PixelStage extends Stage {
   public void win() {
     Vector3 labelPos = world.camera.position.cpy().scl(SCALE);
     win.setPosition(labelPos.x, labelPos.y);
-    win.setVisible(true);
+    win.addAction(Actions.parallel(Actions.fadeIn(1f), Actions.show()));
   }
 
   public void lose() {
     Vector3 labelPos = world.camera.position.cpy().scl(SCALE);
     lose.setPosition(labelPos.x, labelPos.y);
-    lose.setVisible(true);
+    lose.addAction(Actions.parallel(Actions.fadeIn(1f), Actions.show()));
   }
 }
