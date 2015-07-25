@@ -4,6 +4,7 @@
 package com.cisigsoftware.legendofbruho.gamescreen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
@@ -11,6 +12,7 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.Instruction;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.BarricadeEnemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.CrawlingEnemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.TimedBombEnemy;
+import com.cisigsoftware.legendofbruho.utils.InstructionRecord;
 
 /**
  * @author kg
@@ -27,7 +29,7 @@ public class Level {
   private Array<Instruction> instructions;
   private boolean complete;
 
-  public Level(int[][] matrix, String[] instructionText) {
+  public Level(int[][] matrix, InstructionRecord[] instructionText) {
     // Not complete by default
     complete = false;
 
@@ -69,9 +71,10 @@ public class Level {
     // Add level instructions
     instructions = new Array<Instruction>();
 
-    for (String text : instructionText) {
-      Instruction instruction = new Instruction(text, 3.5f, 5);
+    for (InstructionRecord inst : instructionText) {
+      Instruction instruction = new Instruction(inst.text, inst.x, inst.y);
       instruction.setWidth(4);
+      instruction.setAlignment(Align.center, Align.center);
       instructions.add(instruction);
     }
   }

@@ -21,6 +21,8 @@ import com.cisigsoftware.legendofbruho.utils.Constants;
  */
 public class PixelStage extends Stage {
 
+  private static final String TAG = PixelStage.class.getSimpleName();
+  
   public static float SCALE = 80f;
   private Level currentLevel;
 
@@ -32,7 +34,7 @@ public class PixelStage extends Stage {
   public PixelStage(World world) {
     super();
     this.world = world;
-    
+
     pixelCamera = new OrthographicCamera(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
     pixelCamera.position.set(pixelCamera.viewportWidth / 2, pixelCamera.viewportHeight / 2, 0);
     pixelCamera.update();
@@ -88,6 +90,7 @@ public class PixelStage extends Stage {
     Vector3 labelPos = world.camera.position.cpy().scl(SCALE);
     win.setPosition(labelPos.x, labelPos.y);
     win.addAction(Actions.parallel(Actions.fadeIn(1f), Actions.show()));
+    Gdx.app.log(TAG, "Goal! Show at " + labelPos.x + "," + labelPos.y);
   }
 
   public void lose() {

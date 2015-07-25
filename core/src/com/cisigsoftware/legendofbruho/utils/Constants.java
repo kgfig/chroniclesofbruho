@@ -15,8 +15,8 @@ public class Constants {
   public static final int SCREEN_WIDTH = Gdx.graphics.getWidth();
   public static final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
   
-  public static final String[] LVL_INSTRUCTIONS = new String[] {
-      "Test"
+  public static final InstructionRecord[] LVL_INSTRUCTIONS = new InstructionRecord[] {
+      new InstructionRecord("Test", 6, 6)
   };
   
   public static final int[][] DEMO_LEVEL = new int[][] {
@@ -30,8 +30,8 @@ public class Constants {
     {1,0,0,0,0,0,0,4,0,0,0,0,0,0,99,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
   
-  public static final String[] LVL1_INSTRUCTIONS = new String[] {
-    "This place is literally full of shit!\nWho's responsible for this mess?\n\nPress the < > keys to move." 
+  public static final InstructionRecord[] LVL1_INSTRUCTIONS = new InstructionRecord[] {
+    new InstructionRecord("This place is literally full of shit!\nWho's responsible for this mess?\n\nPress the < > keys to move.", 5f, 5.5f) 
   };
   
   public static final int[][] DEMO_LEVEL1 = new int[][] {
@@ -45,8 +45,8 @@ public class Constants {
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,99,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
     
-  public static final String[] LVL2_INSTRUCTIONS = new String[] {
-    "Press S to jump."  
+  public static final InstructionRecord[] LVL2_INSTRUCTIONS = new InstructionRecord[] {
+    new InstructionRecord("Press S to jump.", 5, 6.5f)  
   };
     
   public static final int[][] DEMO_LEVEL2 = new int[][] {
@@ -60,8 +60,8 @@ public class Constants {
     {1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1}};
       
-  public static final String[] LVL3_INSTRUCTIONS = new String[]{
-      "Don't step on shit.\nThey're silent but deadly."
+  public static final InstructionRecord[] LVL3_INSTRUCTIONS = new InstructionRecord[]{
+      new InstructionRecord("Don't step on shit.\nThey're silent but deadly.", 5, 6f)
   };
   
   public static final int[][] DEMO_LEVEL3 = new int[][] {
@@ -75,8 +75,8 @@ public class Constants {
      {1,0,0,0,0,0,0,0,3,0,0,0,0,0,99,1},
      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 
-   public static final String[] LVL4_INSTRUCTIONS = new String[]{
-         "Be careful. Slimy shit ahead."
+   public static final InstructionRecord[] LVL4_INSTRUCTIONS = new InstructionRecord[]{
+         new InstructionRecord("Be careful. Slimy shit ahead.", 5, 6.25f)
    };
 
    public static final int[][] DEMO_LEVEL4 = new int[][] {
@@ -90,8 +90,8 @@ public class Constants {
      {1,1,1,0,3,3,0,1,3,0,3,0,1,0,3,0,3,0,0,1,0,3,0,1,99,1},
      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
      
-   public static final String[] LVL5_INSTRUCTIONS = new String[]{
-         "It's a ticking bomb of poop.\nRun before it explodes!"
+   public static final InstructionRecord[] LVL5_INSTRUCTIONS = new InstructionRecord[]{
+         new InstructionRecord("It's a ticking bomb of poop.\nRun before it explodes!", 5, 6)
    };
      
    public static final int[][] DEMO_LEVEL5 = new int[][] {
@@ -105,8 +105,8 @@ public class Constants {
           {1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,4,0,1,1,1,1,1},
           {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 
-   public static final String[] LVL6_INSTRUCTIONS = new String[]{
-       "There's more of them lying around."
+   public static final InstructionRecord[] LVL6_INSTRUCTIONS = new InstructionRecord[]{
+       new InstructionRecord("It looks like there's more\nof them lying around.", 6.5f, 3.5f)
    };
    
    public static final int[][] DEMO_LEVEL6 = new int[][] {
@@ -120,11 +120,26 @@ public class Constants {
      {1,1,1,1,1,0,1,0,3,0,1,0,1,0,4,1,0,3,0,1,0,4,1,3,0,1,0,3,1,0,1,0,4,1,1,99,1},
      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
      
-   public static final String[] LVL7_INSTRUCTIONS = new String[]{
-       "You can't jump on those.\nPress A to attack."
+   public static final InstructionRecord[] LVL7_INSTRUCTIONS = new InstructionRecord[]{
+       new InstructionRecord("You can't jump on those.\nPress A to do a slash attack.", 4, 5)
    };
    
    public static final int[][] DEMO_LEVEL7 = new int[][] {
+     {1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+     {1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1},
+     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,99,1},
+     {1,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,5,0,0,5,0,1,1},
+     {1,1,0,0,0,0,5,5,5,0,0,0,1,0,0,5,5,0,5,1,5,1,1},
+     {1,1,1,0,0,5,5,5,5,5,0,1,1,0,0,5,5,5,1,1,1,1,1},
+     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
+   
+   public static final InstructionRecord[] LVL8_INSTRUCTIONS = new InstructionRecord[]{
+       new InstructionRecord("Run. Jump. Slash. Do what you want but\ndon't get shit on your hair.", 7, 3.5f) 
+   };
+   
+   public static final int[][] DEMO_LEVEL8 = new int[][] {
      {1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
      {1,0,0,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
      {1,0,0,0,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -136,20 +151,39 @@ public class Constants {
      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
    };
    
-   public static final String[] LVL8_INSTRUCTIONS = new String[]{
-       "Run. Jump. Slash. Do what you want but don't get shit on your hair."
+   public static final InstructionRecord[] LVL9_INSTRUCTIONS = new InstructionRecord[]{
+       new InstructionRecord("There's just too many!", 5, 3.5f)
    };
    
-   public static final String[] LVL9_INSTRUCTIONS = new String[]{
-       "There's too many of them!"
+   public static final int[][] DEMO_LEVEL9 = new int[][] {
+     {1,0,0,0,0,0,0,5,0,0,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1},
+     {0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,99,0,0,0,1},
+     {1,0,0,0,1,0,3,1,0,0,0,0,0,1,0,3,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1},
+     {1,1,0,0,1,1,1,1,0,0,1,0,0,1,1,1,1,1,0,0,5,5,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1},
+     {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,0,0,1,1,1,0,5,0,1,1,1},
+     {1,1,0,0,0,0,0,0,0,0,0,1,1,0,5,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,5,0,0,0,1},
+     {1,1,0,1,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,1,1,1,0,0,1},
+     {1,1,0,1,1,0,0,4,1,1,0,3,0,1,1,0,1,1,0,0,4,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1},
+     {1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,1},
    };
    
-   public static final String[] LVL10_INSTRUCTIONS = new String[]{
-       "You made it through! It looks like you're safe for now.",
-       "What's this? It could be useful."
+   public static final InstructionRecord[] LVL10_INSTRUCTIONS = new InstructionRecord[]{
+       new InstructionRecord("You made it through!\nYou are safe. For now.", 4f, 3),
+       new InstructionRecord("What's this? It could be useful.", 12, 8)
    };
+   
+   public static final int[][] DEMO_LEVEL10 = new int[][] {
+     {1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1},
+     {1,0,0,0,1,1,1,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+     {1,1,0,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,99,1},
+     {1,0,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,1},
+     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+     {1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+     {1,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,1,1,1,1,0,0,1},
+     {1,1,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1},
+     {1,1,0,1,1,0,1,0,0,1,0,0,1,0,1,1,1,1,1,1,1,1,1}};
           
-    public static final int[][] DEMO_LEVEL9 = new int[][] {
+    public static final int[][] DEMO_LEVEL9x = new int[][] {
       {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,1,1,1,1},
       {1,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,0,1},
       {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},

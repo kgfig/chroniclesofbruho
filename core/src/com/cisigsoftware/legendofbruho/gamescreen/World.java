@@ -33,6 +33,7 @@ public class World extends Stage {
   Level currentLevel;
   Hero hero;
   private Array<Enemy> enemies;
+  private Block goal;
 
   private Controls controller;
   private long jumpingPressedTime;
@@ -68,6 +69,7 @@ public class World extends Stage {
    */
   public void setCurrentLevel(Level newLevel) {
     currentLevel = newLevel;
+    goal = currentLevel.getGoal();
 
     // Add the enemies
     enemies = currentLevel.getEnemies();
@@ -245,16 +247,21 @@ public class World extends Stage {
       }
     }
 
-    for (Block[] blockRow : currentLevel.getBlocks()) {
-      for (Block block : blockRow) {
-        if (block != null) {
-          shapeRenderer.begin(ShapeType.Line);
-          shapeRenderer.setColor(0, 0, 1, 1);
-          shapeRenderer.polyline(block.getBounds().getTransformedVertices());
-          shapeRenderer.end();
-        }
-      }
-    }
+    shapeRenderer.begin(ShapeType.Line);
+    shapeRenderer.setColor(0, 0, 1, 1);
+    shapeRenderer.polyline(goal.getBounds().getTransformedVertices());
+    shapeRenderer.end();
+
+    // for (Block[] blockRow : currentLevel.getBlocks()) {
+    // for (Block block : blockRow) {
+    // if (block != null) {
+    // shapeRenderer.begin(ShapeType.Line);
+    // shapeRenderer.setColor(0, 0, 1, 1);
+    // shapeRenderer.polyline(block.getBounds().getTransformedVertices());
+    // shapeRenderer.end();
+    // }
+    // }
+    // }
   }
 
   /**
