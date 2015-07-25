@@ -15,6 +15,8 @@ import com.cisigsoftware.legendofbruho.utils.Constants;
  */
 public class GameScreen implements Screen {
 
+  private static final String TAG = GameScreen.class.getSimpleName();
+
   private Array<Level> levels;
   public Level currentLevel;
   private int levelIndex;
@@ -34,6 +36,7 @@ public class GameScreen implements Screen {
 
     world.create();
     pixelStage.create();
+    Gdx.app.log(TAG, "Created world and pixel stage");
 
     world.setCurrentLevel(currentLevel);
     pixelStage.setCurrentLevel(currentLevel);
@@ -47,7 +50,7 @@ public class GameScreen implements Screen {
     if (currentLevel.isComplete()) {
       if (hasNextLevel()) {
         resetWorld();
-      } else {
+      } else if (!pixelStage.ended) {
         pixelStage.win();
       }
     }
@@ -122,7 +125,6 @@ public class GameScreen implements Screen {
    */
   private void resetWorld() {
     world.clearWorld();
-    pixelStage.clear();
 
     nextLevel();
     world.setCurrentLevel(currentLevel);

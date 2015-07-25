@@ -34,11 +34,13 @@ public class PixelStage extends Stage {
   private World world;
   private OrthographicCamera pixelCamera;
 
+  public boolean ended;
   private Label win, lose;
 
   public PixelStage(World world) {
     super();
     this.world = world;
+    this.ended = false;
 
     pixelCamera = new OrthographicCamera(WIDTH, HEIGHT);
     pixelCamera.position.set(pixelCamera.viewportWidth / 2, pixelCamera.viewportHeight / 2, 0);
@@ -49,7 +51,7 @@ public class PixelStage extends Stage {
   @Override
   public void draw() {
     super.draw();
-    
+
     // Update pixel camera position based on the world camera
     pixelCamera.position.x = world.camera.position.cpy().x * SCALE;
     pixelCamera.update();
@@ -74,12 +76,11 @@ public class PixelStage extends Stage {
    * Creates the actors in the pixel stage
    */
   public void create() {
-    win = new Label("You win!", Assets.gameSkin, "instruction");
+    win = new Label("Yey!", Assets.gameSkin, "instruction");
     lose = new Label("Aww :(", Assets.gameSkin, "instruction");
 
-    win.setVisible(false);
-    lose.setVisible(false);
-    lose.setVisible(false);
+    win.addAction(Actions.fadeOut(0));
+    lose.addAction(Actions.fadeOut(0));
 
     addActor(win);
     addActor(lose);
@@ -105,15 +106,17 @@ public class PixelStage extends Stage {
   }
 
   public void win() {
-    Vector3 labelPos = world.camera.position.cpy().scl(SCALE);
+    ended = true;
+    Vector3 labelPos = pixelCamera.position;
     win.setPosition(labelPos.x, labelPos.y);
-    win.addAction(Actions.parallel(Actions.fadeIn(1f), Actions.show()));
+    win.addAction(Actions.fadeIn(0.5f));
     Gdx.app.log(TAG, "Goal! Show at " + labelPos.x + "," + labelPos.y);
   }
 
   public void lose() {
-    Vector3 labelPos = world.camera.position.cpy().scl(SCALE);
+    ended = true;
+    Vector3 labelPos = pixelCamera.position;
     lose.setPosition(labelPos.x, labelPos.y);
-    lose.addAction(Actions.parallel(Actions.fadeIn(1f), Actions.show()));
+    lose.addAction(Actions.fadeIn(0.5f));
   }
 }

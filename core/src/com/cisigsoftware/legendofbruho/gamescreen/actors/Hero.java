@@ -22,7 +22,7 @@ public class Hero extends GameActor {
   private static final float GRAVITY = -20f; // gravity acceleration
 
   // HP-related stats
-  private static final float MAX_HP = 10;
+  private static final float MAX_HP = 30;
   private static final float DAMAGE = 5;
 
   private enum State {
