@@ -179,4 +179,11 @@ public abstract class PhysicsActor extends BoundedActor {
     this.facingLeft = facingLeft;
   }
 
+  /**
+   * Returns the velocity of the actor
+   * @return the velocity of the actor
+   */
+  public Vector2 getVelocity() {
+    return velocity;
+  }
 }

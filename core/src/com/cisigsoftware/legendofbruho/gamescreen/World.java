@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
@@ -33,6 +34,7 @@ public class World extends Stage {
   OrthographicCamera camera;
   Level currentLevel;
   Hero hero;
+  private Vector3 heroPos;
   private Array<Enemy> enemies;
   private Block goal;
 
@@ -104,6 +106,7 @@ public class World extends Stage {
     // Set the level for the hero
     hero.setLevel(currentLevel);
     hero.setPosition(1, WORLD_HEIGHT - 1);
+    heroPos = new Vector3(hero.getX(), WORLD_HEIGHT / 2, 0);
     addActor(hero);
     addActor(hero.getMeleeWeapon());
   }
@@ -226,10 +229,13 @@ public class World extends Stage {
     super.draw();
 
     // Set camera to follow the hero's movement
-    if (hero.getX() + WORLD_HALF < currentLevel.getWidth() && hero.getX() - WORLD_HALF >= 0)
-      camera.position.x = hero.getX();
+    if (hero.getX() + WORLD_HALF < currentLevel.getWidth() && hero.getX() - WORLD_HALF >= 0) {
+      heroPos.x = hero.getX();
+      camera.position.lerp(heroPos, 0.1f);
+    }
 
     camera.update();
+
 
     // Check if bounds is correctly updated according to the actor's movement
     shapeRenderer.setProjectionMatrix(camera.combined);
