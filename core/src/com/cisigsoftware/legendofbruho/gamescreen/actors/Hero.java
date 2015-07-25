@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.cisigsoftware.legendofbruho.gamescreen.Level;
-import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.Weapon;
 
@@ -169,9 +168,6 @@ public class Hero extends GameActor {
 
     // Update his current position
     moveBy(velocity.x, velocity.y);
-    bounds.translate(velocity.x, velocity.y);
-//    bounds.x = getX();
-//    bounds.y = getY();
 
     meleeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
 

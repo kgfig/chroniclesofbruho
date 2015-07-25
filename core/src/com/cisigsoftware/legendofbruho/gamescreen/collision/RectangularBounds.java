@@ -35,7 +35,7 @@ public class RectangularBounds extends Bounds {
    */
   public RectangularBounds(float x, float y, float width, float height, float originX,
       float originY) {
-    super(new float[] {0, 0, 0, height, width, height, width, 0});
+    super(new float[] {0, 0, 0, height, width, height, width, 0, 0, 0});
     setPosition(x, y);
     setOrigin(originX, originY);
     this.width = width;
@@ -69,5 +69,5 @@ public class RectangularBounds extends Bounds {
   public void setHeight(float height) {
     this.height = height;
   }
-  
+
 }

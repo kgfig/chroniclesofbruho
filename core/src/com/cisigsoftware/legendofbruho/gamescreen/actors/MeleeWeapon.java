@@ -26,8 +26,8 @@ public class MeleeWeapon extends Weapon {
   private State state;
 
   public MeleeWeapon(float x, float y) {
-    setPosition(x, y);
-    setSize(WIDTH, HEIGHT);
+    super(x,y,WIDTH,HEIGHT);
+    setOrigin(0,0);
 
     setState(State.DRAWN);
     draw();

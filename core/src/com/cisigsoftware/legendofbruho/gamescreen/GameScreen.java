@@ -22,7 +22,6 @@ public class GameScreen implements Screen {
   protected World world;
   protected PixelStage pixelStage;
 
-
   public GameScreen() {
     world = new World();
     pixelStage = new PixelStage(world);
@@ -89,12 +88,12 @@ public class GameScreen implements Screen {
   private void createLevels() {
     levelIndex = 0;
     levels = new Array<Level>();
-//    levels.add(new Level(Constants.DEMO_LEVEL1, Constants.LVL1_INSTRUCTIONS));
-//    levels.add(new Level(Constants.DEMO_LEVEL2, Constants.LVL2_INSTRUCTIONS));
-//    levels.add(new Level(Constants.DEMO_LEVEL3, Constants.LVL3_INSTRUCTIONS));
-//    levels.add(new Level(Constants.DEMO_LEVEL4, Constants.LVL4_INSTRUCTIONS));
-//    levels.add(new Level(Constants.DEMO_LEVEL5, Constants.LVL5_INSTRUCTIONS));
-//    levels.add(new Level(Constants.DEMO_LEVEL6, Constants.LVL6_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL1, Constants.LVL1_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL2, Constants.LVL2_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL3, Constants.LVL3_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL4, Constants.LVL4_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL5, Constants.LVL5_INSTRUCTIONS));
+    levels.add(new Level(Constants.DEMO_LEVEL6, Constants.LVL6_INSTRUCTIONS));
     levels.add(new Level(Constants.DEMO_LEVEL7, Constants.LVL7_INSTRUCTIONS));
   }
 

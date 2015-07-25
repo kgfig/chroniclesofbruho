@@ -4,7 +4,6 @@
 package com.cisigsoftware.legendofbruho.gamescreen.actors;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Polygon;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 
 /**
@@ -21,7 +20,6 @@ public abstract class Enemy extends GameActor {
     BARRICADE, BOUNCING, BOMB, CRAWLING
   }
 
-  @SuppressWarnings("unused")
   private static final String TAG = Enemy.class.getSimpleName();
 
   protected Hero target;

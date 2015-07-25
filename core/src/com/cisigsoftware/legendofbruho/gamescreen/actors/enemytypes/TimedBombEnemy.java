@@ -155,12 +155,7 @@ public class TimedBombEnemy extends Enemy {
 
     // Update his current position and the bounds
     moveBy(velocity.x, velocity.y);
-    bounds.translate(velocity.x, velocity.y);
     bounds.setScale(getScaleX(), getScaleY());
-    // bounds.x = getX() + getOriginX() - ((getWidth() * getScaleX()) / 2);
-    // bounds.y = getY();
-    // bounds.width = getWidth() * getScaleX();
-    // bounds.height = getHeight() * getScaleY();
 
     // un-scale the velocity
     velocity.scl(1 / delta);

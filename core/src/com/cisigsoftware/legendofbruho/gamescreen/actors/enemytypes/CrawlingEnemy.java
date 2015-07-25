@@ -168,7 +168,6 @@ public class CrawlingEnemy extends Enemy {
 
     // Update his current position
     moveBy(velocity.x, velocity.y);
-    bounds.translate(velocity.x, velocity.y);
 
     // un-scale the velocity
     velocity.scl(1 / delta);

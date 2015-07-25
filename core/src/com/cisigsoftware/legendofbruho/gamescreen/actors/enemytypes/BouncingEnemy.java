@@ -173,9 +173,6 @@ public class BouncingEnemy extends Enemy {
 
     // Update his current position
     moveBy(velocity.x, velocity.y);
-    bounds.translate(velocity.x, velocity.y);
-//    bounds.x = getX();
-//    bounds.y = getY();
 
     // un-scale the velocity
     velocity.scl(1 / delta);

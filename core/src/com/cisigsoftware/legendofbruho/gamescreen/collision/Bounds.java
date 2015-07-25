@@ -16,6 +16,9 @@ public abstract class Bounds extends Polygon {
     super(vertices);
   }
   
+  public abstract void setWidth(float width);
+  public abstract void setHeight(float height);
+  
   public abstract float getWidth();
   public abstract float getHeight();
 }

@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Hero;
+import com.cisigsoftware.legendofbruho.gamescreen.collision.Bounds;
 
 /**
  * @author kg
@@ -224,18 +225,18 @@ public class World extends Stage {
 
     shapeRenderer.begin(ShapeType.Line);
     shapeRenderer.setColor(1, 1, 0, 1);
-    shapeRenderer.rect(hero.getBounds().getBoundingRectangle().x,
-        hero.getBounds().getBoundingRectangle().y, hero.getBounds().getBoundingRectangle().width,
-        hero.getBounds().getBoundingRectangle().height);
+    shapeRenderer.polyline(hero.getBounds().getTransformedVertices());
+    shapeRenderer.end();
+    
+    shapeRenderer.begin(ShapeType.Line);
+    shapeRenderer.setColor(1, 1, 0, 1);
+    shapeRenderer.polyline(hero.getMeleeWeapon().getBounds().getTransformedVertices());
     shapeRenderer.end();
 
     for (Enemy enemy : enemies) {
       shapeRenderer.begin(ShapeType.Line);
       shapeRenderer.setColor(1, 0, 0, 1);
-      shapeRenderer.rect(enemy.getBounds().getBoundingRectangle().x,
-          enemy.getBounds().getBoundingRectangle().y,
-          enemy.getBounds().getBoundingRectangle().width,
-          enemy.getBounds().getBoundingRectangle().height);
+      shapeRenderer.polyline(enemy.getBounds().getTransformedVertices());
       shapeRenderer.end();
     }
 
@@ -244,10 +245,7 @@ public class World extends Stage {
         if (block != null) {
           shapeRenderer.begin(ShapeType.Line);
           shapeRenderer.setColor(0, 0, 1, 1);
-          shapeRenderer.rect(block.getBounds().getBoundingRectangle().x,
-              block.getBounds().getBoundingRectangle().y,
-              block.getBounds().getBoundingRectangle().width,
-              block.getBounds().getBoundingRectangle().height);
+          shapeRenderer.polyline(block.getBounds().getTransformedVertices());
           shapeRenderer.end();
         }
       }
