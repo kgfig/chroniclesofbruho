@@ -13,86 +13,56 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
  * @author kg
  *
  */
-public class CrawlingEnemy extends Enemy {
+public class BarricadeEnemy extends Enemy {
 
-  private static final String TAG = CrawlingEnemy.class.getSimpleName();
+  private static final String TAG = BarricadeEnemy.class.getSimpleName();
 
   private static final float GRAVITY = -20f;
-  private static final float SIZE = 0.5f;
+  private static final float SIZE = 1f;
 
   private static final float MAX_HP = 5;
   private static final float DAMAGE = 5;
-  private static final float VX = 1f;
 
-  private boolean crawling;
-
-  public CrawlingEnemy(Level level, float x, float y) {
-    super(Type.CRAWLING, x, y, SIZE, SIZE);
+  public BarricadeEnemy(Level level, float x, float y) {
+    super(Type.BARRICADE, x, y, SIZE, SIZE);
 
     setNearThreshold(0);
     setGrounded(true);
+    setState(State.IDLE);
     setGravity(GRAVITY);
     setHp(MAX_HP);
+    setMaxHp(MAX_HP);
     setDamage(DAMAGE);
     setLevel(level);
-    setState(State.IDLE);
-    setAttacked(false);
-    setCrawling(false);
-    setFacingLeft(true);
-    setOriginX(SIZE / 2);
 
     Gdx.app.log(TAG,
-        String.format("Created StaticEnemy with HP=%f\tDamage=%f", getHp(), getDamage()));
+        String.format("Created BarricadeEnemy with HP=%f\tDamage=%f.", getHp(), getDamage()));
   }
 
   @Override
   public void act(float delta) {
     super.act(delta);
 
-    // Enemy is just lying around. Apply gravity.
     acceleration.y = gravity;
 
     if (!level.isComplete()) {
-
-      // Start crawling as soon as it gets into the player's view
-      if (isStateMoving()) {
-        if (!crawling) {
-          Gdx.app.log(TAG, "Crawl");
-          setCrawling(true);
-
-          if (target.getX() + target.getWidth() < getX()) // Set initial direction of crawl based on target position
-            setFacingLeft(true);
-          else
-            setFacingLeft(false);
-        }
-
-        if (facingLeft) // Crawl to the left
-          velocity.x = -VX;
-        else // crawl to the right
-          velocity.x = VX;
-      }
-
       // Unset attacked flag
       if (!target.isDying() && attacked && !this.collidesBeside(target)) {
         setAttacked(false);
         Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
       }
 
-      // Deal damage to the target on collision
       if (!target.isDying() && this.collidesBeside(target) && !attacked) {
         setAttacked(true);
         target.hurt(damage);
-        Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage. attacked?" + attacked);
+        Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
       }
-      
     }
-
   }
 
   @Override
   protected void checkCollisionWithBlocks(float delta) {
     int startX, endX, startY, endY;
-    boolean left;
 
     // scale velocity to the frame
     velocity.scl(delta);
@@ -104,13 +74,10 @@ public class CrawlingEnemy extends Enemy {
     endY = (int) (bounds.y + bounds.height);
 
     // If he is moving to the left, check if he collides with the block to the left
-    if (velocity.x < 0) {
+    if (velocity.x < 0)
       startX = (int) Math.floor(bounds.x + velocity.x);
-      left = true;
-    } else { // check if he collides with the block to the right
+    else // check if he collides with the block to the right
       startX = (int) Math.floor(bounds.x + bounds.width + velocity.x);
-      left = false;
-    }
 
     endX = startX;
 
@@ -124,7 +91,7 @@ public class CrawlingEnemy extends Enemy {
     // If he collides, stop his x-velocity to 0
     for (Block block : collidable) {
       if (block != null && block.collidesBeside(box)) {
-        setFacingLeft(!left);  
+        velocity.x = 0;
         break;
       }
     }
@@ -169,18 +136,8 @@ public class CrawlingEnemy extends Enemy {
     moveBy(velocity.x, velocity.y);
     bounds.x = getX();
     bounds.y = getY();
-    bounds.width = getWidth();
-    bounds.height = getHeight();
 
     // un-scale the velocity
     velocity.scl(1 / delta);
   }
-
-  /**
-   * @param crawling true if the enemy is crawling
-   */
-  private void setCrawling(boolean crawling) {
-    this.crawling = crawling;
-  }
-
 }

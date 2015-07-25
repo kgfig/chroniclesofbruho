@@ -16,7 +16,7 @@ public abstract class Enemy extends GameActor {
   }
   
   protected enum Type {
-    STATIC, BOUNCING, BOMB, CRAWLING
+    BARRICADE, BOUNCING, BOMB, CRAWLING
   }
 
   @SuppressWarnings("unused")
