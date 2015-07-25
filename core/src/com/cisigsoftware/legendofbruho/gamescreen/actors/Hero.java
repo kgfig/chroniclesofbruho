@@ -72,8 +72,9 @@ public class Hero extends GameActor {
         die();
       }
 
-      if (goal != null && this.collidesBeside(goal)) {
+      if (goal != null && this.collidesWith(goal)) {
         level.setComplete(true);
+        Gdx.app.log(TAG, "Reached goal");
       }
       
       if (!meleeWeapon.isSwinging()) {
@@ -124,7 +125,7 @@ public class Hero extends GameActor {
 
     // If he collides, stop his x-velocity to 0
     for (Block block : collidable) {
-      if (block != null && !block.isGoal() && block.collidesBeside(box)) {
+      if (block != null && !block.isGoal() && block.collidesWith(box)) {
         velocity.x = 0;
         break;
       }
@@ -155,7 +156,7 @@ public class Hero extends GameActor {
 
     // If he collides, set his y-velocity to 0 and set grounded to true
     for (Block block : collidable) {
-      if (block != null && !block.isGoal() && block.collidesBeside(box)) {
+      if (block != null && !block.isGoal() && block.collidesWith(box)) {
         if (velocity.y < 0)
           setGrounded(true);
         velocity.y = 0;
@@ -222,6 +223,7 @@ public class Hero extends GameActor {
   private void die() {
     setState(State.DYING);
     remove();
+    meleeWeapon.remove();
   }
   
   /**

@@ -47,15 +47,25 @@ public class BarricadeEnemy extends Enemy {
 
     if (!level.isComplete()) {
       // Unset attacked flag
-      if (!target.isDying() && attacked && !this.collidesBeside(target)) {
+      if (!target.isDying() && attacked && !this.collidesWith(target)) {
         setAttacked(false);
         Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
       }
 
-      if (!target.isDying() && this.collidesBeside(target) && !attacked) {
+      if (!target.isDying() && this.collidesWith(target) && !attacked) {
         setAttacked(true);
         target.hurt(damage);
         Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
+      }
+      
+      if (target.isAttacking() && target.getMeleeWeapon().collidesWith(this)) {
+        Gdx.app.log(TAG, "Collided with weapon. Enemy hit by "+ target.getDamage() + " damage!");
+        this.hurt(target.getDamage());
+        
+        if (!this.hasHp() && !this.isStateDying()) {
+          Gdx.app.log(TAG, "Enemy died.");
+          die();
+        }
       }
     }
   }
@@ -91,7 +101,7 @@ public class BarricadeEnemy extends Enemy {
 
     // If he collides, stop his x-velocity to 0
     for (Block block : collidable) {
-      if (block != null && block.collidesBeside(box)) {
+      if (block != null && block.collidesWith(box)) {
         velocity.x = 0;
         break;
       }
@@ -122,7 +132,7 @@ public class BarricadeEnemy extends Enemy {
 
     // If he collides, set his y-velocity to 0 and set grounded to true
     for (Block block : collidable) {
-      if (block != null && block.collidesBeside(box)) {
+      if (block != null && block.collidesWith(box)) {
         if (velocity.y < 0)
           setGrounded(true);
         velocity.y = 0;
@@ -138,5 +148,10 @@ public class BarricadeEnemy extends Enemy {
 
     // un-scale the velocity
     velocity.scl(1 / delta);
+  }
+  
+  private void die() {
+    setState(State.DYING);
+    remove();
   }
 }

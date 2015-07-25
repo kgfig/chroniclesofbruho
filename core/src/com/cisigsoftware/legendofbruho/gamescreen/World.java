@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Hero;
-import com.cisigsoftware.legendofbruho.gamescreen.collision.Bounds;
 
 /**
  * @author kg
@@ -223,21 +222,27 @@ public class World extends Stage {
     // Check if bounds is correctly updated according to the actor's movement
     shapeRenderer.setProjectionMatrix(camera.combined);
 
-    shapeRenderer.begin(ShapeType.Line);
-    shapeRenderer.setColor(1, 1, 0, 1);
-    shapeRenderer.polyline(hero.getBounds().getTransformedVertices());
-    shapeRenderer.end();
-    
-    shapeRenderer.begin(ShapeType.Line);
-    shapeRenderer.setColor(1, 1, 0, 1);
-    shapeRenderer.polyline(hero.getMeleeWeapon().getBounds().getTransformedVertices());
-    shapeRenderer.end();
-
-    for (Enemy enemy : enemies) {
+    if (hero.hasHp()) {
       shapeRenderer.begin(ShapeType.Line);
-      shapeRenderer.setColor(1, 0, 0, 1);
-      shapeRenderer.polyline(enemy.getBounds().getTransformedVertices());
+      shapeRenderer.setColor(1, 1, 0, 1);
+      shapeRenderer.polyline(hero.getBounds().getTransformedVertices());
       shapeRenderer.end();
+
+      shapeRenderer.begin(ShapeType.Line);
+      shapeRenderer.setColor(1, 1, 0, 1);
+      shapeRenderer.polyline(hero.getMeleeWeapon().getBounds().getTransformedVertices());
+      shapeRenderer.end();
+    }
+
+    if (!currentLevel.isComplete()) {
+      for (Enemy enemy : enemies) {
+        if (enemy.hasHp()) {
+          shapeRenderer.begin(ShapeType.Line);
+          shapeRenderer.setColor(1, 0, 0, 1);
+          shapeRenderer.polyline(enemy.getBounds().getTransformedVertices());
+          shapeRenderer.end();
+        }
+      }
     }
 
     for (Block[] blockRow : currentLevel.getBlocks()) {

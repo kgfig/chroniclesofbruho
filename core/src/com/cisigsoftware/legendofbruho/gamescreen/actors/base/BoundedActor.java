@@ -36,8 +36,8 @@ public class BoundedActor extends Actor {
    * 
    * @param other GameActor
    */
-  public boolean collidesBeside(BoundedActor other) {
-    return Intersector.overlapConvexPolygons(bounds, other.getBounds());
+  public boolean collidesWith(BoundedActor other) {
+    return collidesWith(other.getBounds().getBoundingRectangle());
   }
 
   /**
@@ -45,7 +45,7 @@ public class BoundedActor extends Actor {
    * 
    * @param other GameActor
    */
-  public boolean collidesBeside(Rectangle otherBounds) {
+  public boolean collidesWith(Rectangle otherBounds) {
     return Intersector.overlaps(bounds.getBoundingRectangle(), otherBounds);
   }
 

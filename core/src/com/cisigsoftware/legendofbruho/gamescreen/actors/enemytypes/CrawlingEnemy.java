@@ -73,13 +73,13 @@ public class CrawlingEnemy extends Enemy {
       }
 
       // Unset attacked flag
-      if (!target.isDying() && attacked && !this.collidesBeside(target)) {
+      if (!target.isDying() && attacked && !this.collidesWith(target)) {
         setAttacked(false);
         Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
       }
 
       // Deal damage to the target on collision
-      if (!target.isDying() && this.collidesBeside(target) && !attacked) {
+      if (!target.isDying() && this.collidesWith(target) && !attacked) {
         setAttacked(true);
         target.hurt(damage);
         Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage. attacked?" + attacked);
@@ -124,7 +124,7 @@ public class CrawlingEnemy extends Enemy {
 
     // If he collides, stop his x-velocity to 0
     for (Block block : collidable) {
-      if (block != null && block.collidesBeside(box)) {
+      if (block != null && block.collidesWith(box)) {
         setFacingLeft(!left);  
         break;
       }
@@ -155,7 +155,7 @@ public class CrawlingEnemy extends Enemy {
 
     // If he collides, set his y-velocity to 0 and set grounded to true
     for (Block block : collidable) {
-      if (block != null && block.collidesBeside(box)) {
+      if (block != null && block.collidesWith(box)) {
         if (velocity.y < 0)
           setGrounded(true);
         velocity.y = 0;
