@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.cisigsoftware.legendofbruho.gamescreen.Level;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.Weapon;
 
 /**
  * @author kg
@@ -36,7 +37,9 @@ public class Hero extends GameActor {
   private static final float HEIGHT = 0.5f;
 
   private State state;
+  private MeleeWeapon meleeWeapon;
   private Block goal;
+  private boolean attacking;
 
   public Hero(Vector2 position) {
     super(position.x, position.y, WIDTH, HEIGHT);
@@ -48,6 +51,8 @@ public class Hero extends GameActor {
     setHp(MAX_HP);
     setMaxHp(MAX_HP);
     setDamage(DAMAGE);
+    setAttacking(false);
+    setMeleeWeapon(new MeleeWeapon(position.x + WIDTH / 2, position.y + HEIGHT / 2));
 
     Gdx.app.log(TAG, "Initialized Hero. HP=" + getHp() + "\tdamage=" + getDamage());
   }
@@ -57,7 +62,7 @@ public class Hero extends GameActor {
     super.act(delta);
 
     acceleration.y = gravity;
-    
+
     if (isGrounded() && isJumping())
       idle();
 
@@ -69,6 +74,10 @@ public class Hero extends GameActor {
 
       if (goal != null && this.collidesBeside(goal)) {
         level.setComplete(true);
+      }
+      
+      if (!meleeWeapon.isSwinging()) {
+        setAttacking(false);
       }
     }
   }
@@ -161,6 +170,8 @@ public class Hero extends GameActor {
     bounds.x = getX();
     bounds.y = getY();
 
+    meleeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
+
     // un-scale the velocity
     velocity.scl(1 / delta);
   }
@@ -186,6 +197,21 @@ public class Hero extends GameActor {
     if (isJumping())
       idle();
   }
+  
+  @Override
+  public void setPosition(float x, float y) {
+    super.setPosition(x, y);
+    if (meleeWeapon != null)
+      meleeWeapon.setPosition(x + WIDTH / 2, y + HEIGHT / 2);
+  }
+  
+  /**
+   * Uses the melee weapon to attack
+   */
+  public void attack() {
+    attacking = true;
+    meleeWeapon.use();
+  }
 
   /**
    * @param state the state to set
@@ -197,6 +223,15 @@ public class Hero extends GameActor {
   private void die() {
     setState(State.DYING);
     remove();
+  }
+  
+  /**
+   * Returns true if the current state of hero is ATTACKING
+   * 
+   * @return true if the current state of hero is ATTACKING
+   */
+  public boolean isAttacking() {
+    return attacking;
   }
 
   /**
@@ -301,4 +336,26 @@ public class Hero extends GameActor {
     this.level = level;
     goal = level.getGoal();
   }
+
+  /**
+   * @return the weapon equipped by the hero
+   */
+  public Weapon getMeleeWeapon() {
+    return meleeWeapon;
+  }
+
+  /**
+   * @param weapon sets the weapon equipped by the hero
+   */
+  public void setMeleeWeapon(MeleeWeapon weapon) {
+    this.meleeWeapon = weapon;
+  }
+
+  /**
+   * @param attacking the attacking to set
+   */
+  public void setAttacking(boolean attacking) {
+    this.attacking = attacking;
+  }
+  
 }

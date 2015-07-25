@@ -124,6 +124,10 @@ public class Constants {
        "You can't jump on those.\nPress A to attack."
    };
    
+   public static final int[][] DEMO_LEVEL7 = new int[][] {
+     
+   };
+   
    public static final String[] LVL8_INSTRUCTIONS = new String[]{
        "Run. Jump. Slash. Do what you want but don't get shit on your hair."
    };

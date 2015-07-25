@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -36,7 +35,7 @@ public class World extends Stage {
 
   private Controls controller;
   private long jumpingPressedTime;
-  private boolean jumpingPressed;
+  private boolean jumpingPressed, attackPressed;
   private ShapeRenderer shapeRenderer;
 
   public World() {
@@ -93,6 +92,7 @@ public class World extends Stage {
     hero.setLevel(currentLevel);
     hero.setPosition(1, WORLD_HEIGHT - 1);
     addActor(hero);
+    addActor(hero.getMeleeWeapon());
   }
 
   public void clearWorld() {
@@ -124,7 +124,7 @@ public class World extends Stage {
     if (keyCode == Keys.S)
       controller.jumpPressed();
     if (keyCode == Keys.A)
-      controller.firePressed();
+      controller.attackedPressed();
     return true;
 
   }
@@ -139,8 +139,10 @@ public class World extends Stage {
       controller.jumpReleased();
       jumpingPressed = false;
     }
-    if (keyCode == Keys.A)
-      controller.fireReleased();
+    if (keyCode == Keys.A) {
+      controller.attackedReleased();
+      attackPressed = false;
+    }
     return true;
   }
 
@@ -192,6 +194,17 @@ public class World extends Stage {
         hero.idle();
       }
       hero.stopWalking();
+    }
+    
+    if (controller.isAttackPressed()) {
+      Gdx.app.log(TAG, "Pressed attack");
+      if (!hero.isAttacking()) {
+        Gdx.app.log(TAG, "Hero attacks!");
+        hero.attack();
+        attackPressed = true;
+      } else if (attackPressed) {
+        attackPressed = false;
+      }
     }
   }
 
