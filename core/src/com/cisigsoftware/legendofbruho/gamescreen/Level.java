@@ -3,6 +3,7 @@
  */
 package com.cisigsoftware.legendofbruho.gamescreen;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
@@ -16,6 +17,8 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.TimedBombEne
  *
  */
 public class Level {
+
+  private static final String TAG = Level.class.getSimpleName();
 
   private int width;
   private int height;
@@ -36,12 +39,15 @@ public class Level {
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
+        Gdx.app.log(TAG, "Create actor at position=(" + x + "," + y + ")");
+
         switch (matrix[height - 1 - y][x]) {
           case 1:
             blocks[x][y] = new Block(x, y);
             break;
           case 3:
-            enemies.add(new CrawlingEnemy(this, x, y));
+            Enemy enemy = new CrawlingEnemy(this, x, y);
+            enemies.add(enemy);
             break;
           case 4:
             enemies.add(new TimedBombEnemy(this, x, y));
@@ -217,8 +223,8 @@ public class Level {
       }
     }
 
-//    for (Instruction instruction : instructions) {
-//      instruction.remove();
-//    }
+    // for (Instruction instruction : instructions) {
+    // instruction.remove();
+    // }
   }
 }

@@ -30,7 +30,7 @@ public class CrawlingEnemy extends Enemy {
     super(Type.CRAWLING, x, y, SIZE, SIZE);
 
     setNearThreshold(0);
-    setGrounded(true);
+    setGrounded(false);
     setGravity(GRAVITY);
     setHp(MAX_HP);
     setDamage(DAMAGE);
@@ -93,6 +93,7 @@ public class CrawlingEnemy extends Enemy {
   protected void checkCollisionWithBlocks(float delta) {
     int startX, endX, startY, endY;
     boolean left;
+    Rectangle rectBounds = bounds.getBoundingRectangle();
 
     // scale velocity to the frame
     velocity.scl(delta);
@@ -100,15 +101,15 @@ public class CrawlingEnemy extends Enemy {
     /*
      * Check for collision along the x-axis
      */
-    startY = (int) bounds.y;
-    endY = (int) (bounds.y + bounds.height);
+    startY = (int) rectBounds.y;
+    endY = (int) (rectBounds.y + rectBounds.height);
 
     // If he is moving to the left, check if he collides with the block to the left
     if (velocity.x < 0) {
-      startX = (int) Math.floor(bounds.x + velocity.x);
+      startX = (int) Math.floor(rectBounds.x + velocity.x);
       left = true;
     } else { // check if he collides with the block to the right
-      startX = (int) Math.floor(bounds.x + bounds.width + velocity.x);
+      startX = (int) Math.floor(rectBounds.x + rectBounds.width + velocity.x);
       left = false;
     }
 
@@ -135,14 +136,14 @@ public class CrawlingEnemy extends Enemy {
     /**
      * Check for collision in the y-axis
      */
-    startX = (int) bounds.x;
-    endX = (int) (bounds.x + bounds.width);
+    startX = (int) rectBounds.x;
+    endX = (int) (rectBounds.x + rectBounds.width);
 
     // If he is standing or falling, check if he collides with the block below
     if (velocity.y < 0)
-      startY = (int) Math.floor(bounds.y + velocity.y);
+      startY = (int) Math.floor(rectBounds.y + velocity.y);
     else // otherwise check the block above
-      startY = (int) Math.floor(bounds.y + bounds.height + velocity.y);
+      startY = (int) Math.floor(rectBounds.y + rectBounds.height + velocity.y);
 
     endY = startY;
 
@@ -167,10 +168,7 @@ public class CrawlingEnemy extends Enemy {
 
     // Update his current position
     moveBy(velocity.x, velocity.y);
-    bounds.x = getX();
-    bounds.y = getY();
-    bounds.width = getWidth();
-    bounds.height = getHeight();
+    bounds.translate(velocity.x, velocity.y);
 
     // un-scale the velocity
     velocity.scl(1 / delta);

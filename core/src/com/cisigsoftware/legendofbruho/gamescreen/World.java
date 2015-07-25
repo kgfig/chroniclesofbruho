@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -195,7 +196,7 @@ public class World extends Stage {
       }
       hero.stopWalking();
     }
-    
+
     if (controller.isAttackPressed()) {
       Gdx.app.log(TAG, "Pressed attack");
       if (!hero.isAttacking()) {
@@ -221,19 +222,36 @@ public class World extends Stage {
     // Check if bounds is correctly updated according to the actor's movement
     shapeRenderer.setProjectionMatrix(camera.combined);
 
-//    shapeRenderer.begin(ShapeType.Line);
-//    shapeRenderer.setColor(1, 1, 0, 1);
-//    shapeRenderer.rect(hero.getBounds().x, hero.getBounds().y, hero.getBounds().width,
-//        hero.getBounds().height);
-//    shapeRenderer.end();
-    
-//    for (Enemy enemy : enemies) {
-//      shapeRenderer.begin(ShapeType.Line);
-//      shapeRenderer.setColor(1, 1, 0, 1);
-//      shapeRenderer.rect(enemy.getBounds().x, enemy.getBounds().y, enemy.getBounds().width,
-//          enemy.getBounds().height);
-//      shapeRenderer.end();
-//    }
+    shapeRenderer.begin(ShapeType.Line);
+    shapeRenderer.setColor(1, 1, 0, 1);
+    shapeRenderer.rect(hero.getBounds().getBoundingRectangle().x,
+        hero.getBounds().getBoundingRectangle().y, hero.getBounds().getBoundingRectangle().width,
+        hero.getBounds().getBoundingRectangle().height);
+    shapeRenderer.end();
+
+    for (Enemy enemy : enemies) {
+      shapeRenderer.begin(ShapeType.Line);
+      shapeRenderer.setColor(1, 0, 0, 1);
+      shapeRenderer.rect(enemy.getBounds().getBoundingRectangle().x,
+          enemy.getBounds().getBoundingRectangle().y,
+          enemy.getBounds().getBoundingRectangle().width,
+          enemy.getBounds().getBoundingRectangle().height);
+      shapeRenderer.end();
+    }
+
+    for (Block[] blockRow : currentLevel.getBlocks()) {
+      for (Block block : blockRow) {
+        if (block != null) {
+          shapeRenderer.begin(ShapeType.Line);
+          shapeRenderer.setColor(0, 0, 1, 1);
+          shapeRenderer.rect(block.getBounds().getBoundingRectangle().x,
+              block.getBounds().getBoundingRectangle().y,
+              block.getBounds().getBoundingRectangle().width,
+              block.getBounds().getBoundingRectangle().height);
+          shapeRenderer.end();
+        }
+      }
+    }
   }
 
   /**

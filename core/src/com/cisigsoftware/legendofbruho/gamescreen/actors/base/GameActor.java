@@ -16,10 +16,6 @@ public abstract class GameActor extends PhysicsActor {
   protected float hp, maxHp;
   protected float damage;
 
-  public GameActor() {
-    super();
-  }
-
   public GameActor(float x, float y, float width, float height) {
     super(x, y, width, height);
 

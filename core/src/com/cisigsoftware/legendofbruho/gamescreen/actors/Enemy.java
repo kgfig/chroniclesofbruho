@@ -3,6 +3,8 @@
  */
 package com.cisigsoftware.legendofbruho.gamescreen.actors;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Polygon;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 
 /**
@@ -14,7 +16,7 @@ public abstract class Enemy extends GameActor {
   protected enum State {
     IDLE, MOVING, ATTACKING, DYING;
   }
-  
+
   protected enum Type {
     BARRICADE, BOUNCING, BOMB, CRAWLING
   }
@@ -30,6 +32,9 @@ public abstract class Enemy extends GameActor {
 
   public Enemy(Type type, float x, float y, float width, float height) {
     super(x, y, width, height);
+
+    Gdx.app.log(TAG,
+        String.format("Created enemy at position (%f,%f)", bounds.getX(), bounds.getY()));
     this.type = type;
   }
 

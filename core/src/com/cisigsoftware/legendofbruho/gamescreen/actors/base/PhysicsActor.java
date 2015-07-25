@@ -3,6 +3,7 @@
  */
 package com.cisigsoftware.legendofbruho.gamescreen.actors.base;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -17,7 +18,7 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
  */
 public abstract class PhysicsActor extends BoundedActor {
 
-  // private static final String TAG = PhysicsActor.class.getSimpleName();
+  private static final String TAG = PhysicsActor.class.getSimpleName();
 
   // May have to turn these to instance variables
   private static final float DAMP = 0.9f; // smooth out movement so he won't stop abruptly, ignore
@@ -43,15 +44,10 @@ public abstract class PhysicsActor extends BoundedActor {
   protected boolean grounded;
   protected boolean facingLeft;
 
-  public PhysicsActor() {
-    super();
-  }
-
   public PhysicsActor(float x, float y, float width, float height) {
     super(x, y, width, height);
-    setPosition(x, y);
-    setSize(width, height);
-
+    Gdx.app.log(TAG,
+        String.format("Created PhysicsActor at position (%f,%f)", bounds.getX(), bounds.getY()));
     initPhysicsProperties();
   }
 
@@ -91,7 +87,7 @@ public abstract class PhysicsActor extends BoundedActor {
       resetY();
     }
 
-    float rightX = level.getWidth() - bounds.getWidth();
+    float rightX = level.getWidth() - bounds.getBoundingRectangle().getWidth();
 
     if (getX() > rightX) {
       setX(rightX);
@@ -109,7 +105,8 @@ public abstract class PhysicsActor extends BoundedActor {
     rectPool = new Pool<Rectangle>() {
       @Override
       protected Rectangle newObject() {
-        return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+        return new Rectangle(bounds.getBoundingRectangle().x, bounds.getBoundingRectangle().y,
+            bounds.getBoundingRectangle().width, bounds.getBoundingRectangle().height);
       }
     };
 

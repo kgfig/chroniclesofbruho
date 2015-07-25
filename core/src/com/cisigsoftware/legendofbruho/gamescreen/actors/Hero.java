@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.cisigsoftware.legendofbruho.gamescreen.Level;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.Weapon;
 
@@ -42,7 +43,7 @@ public class Hero extends GameActor {
   private boolean attacking;
 
   public Hero(Vector2 position) {
-    super(position.x, position.y, WIDTH, HEIGHT);
+    super(position.x,position.y, WIDTH, HEIGHT);
 
     state = State.IDLE;
     setGrounded(false);
@@ -86,7 +87,7 @@ public class Hero extends GameActor {
   public void draw(Batch batch, float parentAlpha) {
     super.draw(batch, parentAlpha);
 
-    float rightX = level.getWidth() - bounds.getWidth();
+    float rightX = level.getWidth() - bounds.getBoundingRectangle().getWidth();
 
     if (getX() > rightX && !isJumping()) {
       idle();
@@ -96,6 +97,7 @@ public class Hero extends GameActor {
   @Override
   protected void checkCollisionWithBlocks(float delta) {
     int startX, endX, startY, endY;
+    Rectangle rectBounds = bounds.getBoundingRectangle();
 
     // scale velocity to the frame
     velocity.scl(delta);
@@ -103,14 +105,14 @@ public class Hero extends GameActor {
     /*
      * Check for collision along the x-axis
      */
-    startY = (int) bounds.y;
-    endY = (int) (bounds.y + bounds.height);
+    startY = (int) rectBounds.y;
+    endY = (int) (rectBounds.y + rectBounds.height);
 
     // If he is moving to the left, check if he collides with the block to the left
     if (velocity.x < 0)
-      startX = (int) Math.floor(bounds.x + velocity.x);
+      startX = (int) Math.floor(rectBounds.x + velocity.x);
     else // check if he collides with the block to the right
-      startX = (int) Math.floor(bounds.x + bounds.width + velocity.x);
+      startX = (int) Math.floor(rectBounds.x + rectBounds.width + velocity.x);
 
     endX = startX;
 
@@ -135,14 +137,14 @@ public class Hero extends GameActor {
     /**
      * Check for collision in the y-axis
      */
-    startX = (int) bounds.x;
-    endX = (int) (bounds.x + bounds.width);
+    startX = (int) rectBounds.x;
+    endX = (int) (rectBounds.x + rectBounds.width);
 
     // If he is standing or falling, check if he collides with the block below
     if (velocity.y < 0)
-      startY = (int) Math.floor(bounds.y + velocity.y);
+      startY = (int) Math.floor(rectBounds.y + velocity.y);
     else // otherwise check the block above
-      startY = (int) Math.floor(bounds.y + bounds.height + velocity.y);
+      startY = (int) Math.floor(rectBounds.y + rectBounds.height + velocity.y);
 
     endY = startY;
 
@@ -167,8 +169,9 @@ public class Hero extends GameActor {
 
     // Update his current position
     moveBy(velocity.x, velocity.y);
-    bounds.x = getX();
-    bounds.y = getY();
+    bounds.translate(velocity.x, velocity.y);
+//    bounds.x = getX();
+//    bounds.y = getY();
 
     meleeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
 

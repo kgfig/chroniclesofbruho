@@ -41,7 +41,8 @@ public class TimedBombEnemy extends Enemy {
     setHp(MAX_HP);
     setDamage(DAMAGE);
     setLevel(level);
-    setOriginX(SIZE / 2);
+    setOrigin(SIZE / 2, 0);
+    bounds.setOrigin(SIZE / 2, 0);
     setSwelling(false);
 
     Gdx.app.log(TAG,
@@ -82,6 +83,7 @@ public class TimedBombEnemy extends Enemy {
   @Override
   protected void checkCollisionWithBlocks(float delta) {
     int startX, endX, startY, endY;
+    Rectangle rectBounds = bounds.getBoundingRectangle();
 
     // scale velocity to the frame
     velocity.scl(delta);
@@ -89,14 +91,14 @@ public class TimedBombEnemy extends Enemy {
     /*
      * Check for collision along the x-axis
      */
-    startY = (int) bounds.y;
-    endY = (int) (bounds.y + bounds.height);
+    startY = (int) rectBounds.y;
+    endY = (int) (rectBounds.y + rectBounds.height);
 
     // If he is moving to the left, check if he collides with the block to the left
     if (velocity.x < 0)
-      startX = (int) Math.floor(bounds.x + velocity.x);
+      startX = (int) Math.floor(rectBounds.x + velocity.x);
     else // check if he collides with the block to the right
-      startX = (int) Math.floor(bounds.x + bounds.width + velocity.x);
+      startX = (int) Math.floor(rectBounds.x + rectBounds.width + velocity.x);
 
     endX = startX;
 
@@ -121,14 +123,14 @@ public class TimedBombEnemy extends Enemy {
     /**
      * Check for collision in the y-axis
      */
-    startX = (int) bounds.x;
-    endX = (int) (bounds.x + bounds.width);
+    startX = (int) rectBounds.x;
+    endX = (int) (rectBounds.x + rectBounds.width);
 
     // If he is standing or falling, check if he collides with the block below
     if (velocity.y < 0)
-      startY = (int) Math.floor(bounds.y + velocity.y);
+      startY = (int) Math.floor(rectBounds.y + velocity.y);
     else // otherwise check the block above
-      startY = (int) Math.floor(bounds.y + bounds.height + velocity.y);
+      startY = (int) Math.floor(rectBounds.y + rectBounds.height + velocity.y);
 
     endY = startY;
 
@@ -153,10 +155,12 @@ public class TimedBombEnemy extends Enemy {
 
     // Update his current position and the bounds
     moveBy(velocity.x, velocity.y);
-    bounds.x = getX() + getOriginX() - ((getWidth() * getScaleX()) / 2);
-    bounds.y = getY();
-    bounds.width = getWidth() * getScaleX();
-    bounds.height = getHeight() * getScaleY();
+    bounds.translate(velocity.x, velocity.y);
+    bounds.setScale(getScaleX(), getScaleY());
+    // bounds.x = getX() + getOriginX() - ((getWidth() * getScaleX()) / 2);
+    // bounds.y = getY();
+    // bounds.width = getWidth() * getScaleX();
+    // bounds.height = getHeight() * getScaleY();
 
     // un-scale the velocity
     velocity.scl(1 / delta);

@@ -3,6 +3,7 @@
  */
 package com.cisigsoftware.legendofbruho.gamescreen.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
 
@@ -12,6 +13,8 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
  */
 public class Block extends BoundedActor {
 
+  private static final String TAG = Block.class.getSimpleName();
+
   private static final float SIZE = 1f;
   private boolean goal;
 
@@ -20,11 +23,12 @@ public class Block extends BoundedActor {
   }
 
   public Block(float x, float y) {
-    super(x, y, SIZE, SIZE);
-    setPosition(x, y);
-    setSize(SIZE, SIZE);
-    
+    super(x,y,SIZE,SIZE);
     goal = false;
+
+    Gdx.app.log(TAG,
+        String.format("Created block at position (%f,%f) bounds at (%f,%f) origin at (%f,%f)", x, y,
+            bounds.getX(), bounds.getY(), bounds.getOriginX(), bounds.getOriginY()));
   }
 
   /**
