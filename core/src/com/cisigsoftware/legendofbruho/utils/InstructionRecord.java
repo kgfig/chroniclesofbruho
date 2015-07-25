@@ -9,18 +9,22 @@ package com.cisigsoftware.legendofbruho.utils;
  */
 public class InstructionRecord {
 
+  public int id;
   public String text;
   public float x, y;
+  public boolean autoShow;
   
   /**
    * @param text
    * @param x
    * @param y
    */
-  public InstructionRecord(String text, float x, float y) {
+  public InstructionRecord(int id, String text, float x, float y, boolean autoShow) {
+    this.id = id;
     this.text = text;
     this.x = x;
     this.y = y;
+    this.autoShow = autoShow; 
   }
   
 }

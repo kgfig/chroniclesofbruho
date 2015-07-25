@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Hero;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Item;
 
 /**
  * @author kg
@@ -89,6 +90,15 @@ public class World extends Stage {
           addActor(block);
         }
       }
+    }
+
+    // Add the items
+    Array<Item> items = currentLevel.getItems();
+
+    for (Item item : items) {
+      item.setUser(hero);
+      item.setDebug(true);
+      addActor(item);
     }
 
     // Set the level for the hero
@@ -251,6 +261,15 @@ public class World extends Stage {
     shapeRenderer.setColor(0, 0, 1, 1);
     shapeRenderer.polyline(goal.getBounds().getTransformedVertices());
     shapeRenderer.end();
+
+    for (Item item : currentLevel.getItems()) {
+      if (item != null && !item.isUnlocked()) {
+        shapeRenderer.begin(ShapeType.Line);
+        shapeRenderer.setColor(0, 0, 1, 1);
+        shapeRenderer.polyline(item.getBounds().getTransformedVertices());
+        shapeRenderer.end();
+      }
+    }
 
     // for (Block[] blockRow : currentLevel.getBlocks()) {
     // for (Block block : blockRow) {

@@ -3,12 +3,17 @@
  */
 package com.cisigsoftware.legendofbruho.gamescreen;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Instruction;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Item;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.BarricadeEnemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.CrawlingEnemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.TimedBombEnemy;
@@ -26,7 +31,8 @@ public class Level {
   private int height;
   private Block[][] blocks;
   private Array<Enemy> enemies;
-  private Array<Instruction> instructions;
+  private Map<Integer, Instruction> instructions;
+  private Array<Item> items;
   private boolean complete;
 
   public Level(int[][] matrix, InstructionRecord[] instructionText) {
@@ -38,6 +44,7 @@ public class Level {
     height = matrix.length;
     blocks = new Block[width][height];
     enemies = new Array<Enemy>();
+    items = new Array<Item>();
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
@@ -61,6 +68,11 @@ public class Level {
             blocks[x][y] = new Block(x, y);
             blocks[x][y].setGoal(true);
             break;
+          case 100:
+            Item item = new Item(this, x, y);
+            item.setInstructionId(11);
+            items.add(item);
+            break;
           default:
             blocks[x][y] = null;
             break;
@@ -69,13 +81,13 @@ public class Level {
     }
 
     // Add level instructions
-    instructions = new Array<Instruction>();
+    instructions = new HashMap<Integer, Instruction>();
 
-    for (InstructionRecord inst : instructionText) {
-      Instruction instruction = new Instruction(inst.text, inst.x, inst.y);
+    for (InstructionRecord model : instructionText) {
+      Instruction instruction = new Instruction(model);
       instruction.setWidth(4);
       instruction.setAlignment(Align.center, Align.center);
-      instructions.add(instruction);
+      instructions.put(model.id, instruction);
     }
   }
 
@@ -115,13 +127,6 @@ public class Level {
   }
 
   /**
-   * @param blocks the blocks to set
-   */
-  public void setBlocks(Block[][] blocks) {
-    this.blocks = blocks;
-  }
-
-  /**
    * Returns the block at the specified location
    * 
    * @param col x-coordinate
@@ -140,24 +145,21 @@ public class Level {
   }
 
   /**
-   * @param enemies the enemies to set
-   */
-  public void setEnemies(Array<Enemy> enemies) {
-    this.enemies = enemies;
-  }
-
-  /**
    * @return the instructions in the level
    */
-  public Array<Instruction> getInstructions() {
-    return instructions;
+  public Collection<Instruction> getInstructions() {
+    return instructions.values();
+  }
+
+  public Instruction getInstruction(int id) {
+    return instructions.get(id);
   }
 
   /**
-   * @param instructions the instructions for the level
+   * @return the items
    */
-  public void setInstructions(Array<Instruction> instructions) {
-    this.instructions = instructions;
+  public Array<Item> getItems() {
+    return items;
   }
 
   /**
@@ -214,6 +216,9 @@ public class Level {
     this.complete = complete;
   }
 
+  /**
+   * Removes the world actors from their stages
+   */
   public void remove() {
     for (Enemy enemy : enemies) {
       enemy.remove();
@@ -226,8 +231,12 @@ public class Level {
       }
     }
 
-    // for (Instruction instruction : instructions) {
-    // instruction.remove();
-    // }
+    for (Instruction instruction : instructions.values()) {
+      instruction.remove();
+    }
+
+    for (Item item : items) {
+      item.remove();
+    }
   }
 }

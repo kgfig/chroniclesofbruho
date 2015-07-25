@@ -23,7 +23,7 @@ public class Block extends BoundedActor {
   }
 
   public Block(float x, float y) {
-    super(x,y,SIZE,SIZE);
+    super(x, y, SIZE, SIZE);
     goal = false;
 
     Gdx.app.log(TAG,
