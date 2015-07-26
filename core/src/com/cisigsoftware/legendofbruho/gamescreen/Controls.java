@@ -13,7 +13,7 @@ import java.util.Map;
 public class Controls {
 
   public enum Keys {
-    LEFT, RIGHT, JUMP, ATTACK
+    LEFT, RIGHT, JUMP, ATTACK, SWITCH
   }
 
   private static Map<Keys, Boolean> keys = new HashMap<Keys, Boolean>();
@@ -23,6 +23,7 @@ public class Controls {
     keys.put(Keys.RIGHT, false);
     keys.put(Keys.JUMP, false);
     keys.put(Keys.ATTACK, false);
+    keys.put(Keys.SWITCH, false);
   }
 
   public Controls() {}
@@ -50,6 +51,10 @@ public class Controls {
   public void attackedPressed() {
     setPressed(Keys.ATTACK, true);
   }
+  
+  public void switchPressed() {
+    setPressed(Keys.SWITCH, true);
+  }
 
   public void leftReleased() {
     setPressed(Keys.LEFT, false);
@@ -65,6 +70,10 @@ public class Controls {
 
   public void attackedReleased() {
     setPressed(Keys.ATTACK, false);
+  }
+  
+  public void switchReleased() {
+    setPressed(Keys.SWITCH, false);
   }
 
   public boolean isLeftPressed() {
@@ -83,4 +92,7 @@ public class Controls {
     return isPressed(Keys.ATTACK);
   }
 
+  public boolean isSwitchPressed() {
+    return isPressed(Keys.SWITCH);
+  }
 }

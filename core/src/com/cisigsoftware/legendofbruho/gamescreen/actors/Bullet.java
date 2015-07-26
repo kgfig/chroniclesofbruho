@@ -1,80 +1,40 @@
 /**
  * Copyright 2015 CISIG Software Labs Inc. All Rights Reserved.
  */
-package com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes;
+package com.cisigsoftware.legendofbruho.gamescreen.actors;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
-import com.cisigsoftware.legendofbruho.gamescreen.Level;
-import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
-import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.PhysicsActor;
 
 /**
  * @author kg
  *
  */
-public class BarricadeEnemy extends Enemy {
+public class Bullet extends PhysicsActor {
 
-  private static final String TAG = BarricadeEnemy.class.getSimpleName();
+  private static final float WIDTH = 0.35f;
+  private static final float HEIGHT = 0.25f;
 
-  private static final float GRAVITY = -20f;
-  private static final float SIZE = 1f;
+  private static float VX = 12f;
 
-  private static final float MAX_HP = 5;
-  private static final float DAMAGE = 5;
+  public Bullet(float x, float y) {
+    super(x, y, WIDTH, HEIGHT);
 
-  public BarricadeEnemy(Level level, float x, float y) {
-    super(Type.BARRICADE, x,y,SIZE,SIZE);
-
-    setNearThreshold(0);
-    setGrounded(true);
-    setState(State.IDLE);
-    setGravity(GRAVITY);
-    setHp(MAX_HP);
-    setMaxHp(MAX_HP);
-    setDamage(DAMAGE);
-    setLevel(level);
-
-    Gdx.app.log(TAG,
-        String.format("Created BarricadeEnemy with HP=%f\tDamage=%f.", getHp(), getDamage()));
+    setGrounded(false);
   }
-
+  
   @Override
   public void act(float delta) {
     super.act(delta);
-
-    acceleration.y = gravity;
-
-    if (!level.isComplete()) {
-      // Unset attacked flag
-      if (!target.isDying() && attacked && !this.collidesWith(target)) {
-        setAttacked(false);
-        Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
-      }
-
-      if (!target.isDying() && this.collidesWith(target) && !attacked) {
-        setAttacked(true);
-        target.hurt(damage);
-        Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
-      }
-      
-      if (target.isSlashing() && target.getMeleeWeapon().collidesWith(this)) {
-        Gdx.app.log(TAG, "Collided with weapon. Enemy hit by "+ target.getDamage() + " damage!");
-        this.hurt(target.getDamage());
-        
-        if (!this.hasHp() && !this.isStateDying()) {
-          Gdx.app.log(TAG, "Enemy died.");
-          die();
-        }
-      }
-    }
+    
+    velocity.x = VX;
   }
 
   @Override
   protected void checkCollisionWithBlocks(float delta) {
     int startX, endX, startY, endY;
     Rectangle rectBounds = bounds.getBoundingRectangle();
-    
+
     // scale velocity to the frame
     velocity.scl(delta);
 
@@ -85,10 +45,11 @@ public class BarricadeEnemy extends Enemy {
     endY = (int) (rectBounds.y + rectBounds.height);
 
     // If he is moving to the left, check if he collides with the block to the left
-    if (velocity.x < 0)
+    if (velocity.x < 0) {
       startX = (int) Math.floor(rectBounds.x + velocity.x);
-    else // check if he collides with the block to the right
+    } else { // check if he collides with the block to the right
       startX = (int) Math.floor(rectBounds.x + rectBounds.width + velocity.x);
+    }
 
     endX = startX;
 
@@ -102,7 +63,8 @@ public class BarricadeEnemy extends Enemy {
     // If he collides, stop his x-velocity to 0
     for (Block block : collidable) {
       if (block != null && block.collidesWith(box)) {
-        velocity.x = 0;
+        velocity.x = 0;  
+        remove();
         break;
       }
     }
@@ -136,6 +98,7 @@ public class BarricadeEnemy extends Enemy {
         if (velocity.y < 0)
           setGrounded(true);
         velocity.y = 0;
+        remove();
         break;
       }
     }
@@ -149,9 +112,6 @@ public class BarricadeEnemy extends Enemy {
     // un-scale the velocity
     velocity.scl(1 / delta);
   }
+
   
-  private void die() {
-    setState(State.DYING);
-    remove();
-  }
 }

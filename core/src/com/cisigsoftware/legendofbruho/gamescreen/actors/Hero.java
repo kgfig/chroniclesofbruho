@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.cisigsoftware.legendofbruho.gamescreen.Level;
+import com.cisigsoftware.legendofbruho.gamescreen.World;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.Weapon;
 
@@ -29,6 +30,14 @@ public class Hero extends GameActor {
     IDLE, WALKING, JUMPING, DYING
   }
 
+  private enum WeaponState {
+    READY, SLASHING, FIRING, SWITCHING
+  }
+
+  private enum AttackMode {
+    MELEE, RANGE
+  }
+
   private static final float MAX_VEL = 4f; // maximum velocity for movement along horizontal axis
                                            // while walking or running
   private static final float ACCELERATION = 20f; // for walking and running
@@ -37,12 +46,14 @@ public class Hero extends GameActor {
   private static final float HEIGHT = 0.5f;
 
   private State state;
+  private WeaponState weaponState;
+  private AttackMode mode;
   private MeleeWeapon meleeWeapon;
+  private RangeWeapon rangeWeapon;
   private Block goal;
-  private boolean attacking;
 
-  public Hero(Vector2 position) {
-    super(position.x,position.y, WIDTH, HEIGHT);
+  public Hero(World world, Vector2 position) {
+    super(position.x, position.y, WIDTH, HEIGHT);
 
     state = State.IDLE;
     setGrounded(false);
@@ -51,8 +62,14 @@ public class Hero extends GameActor {
     setHp(MAX_HP);
     setMaxHp(MAX_HP);
     setDamage(DAMAGE);
-    setAttacking(false);
-    setMeleeWeapon(new MeleeWeapon(position.x + WIDTH / 2, position.y + HEIGHT / 2));
+
+    MeleeWeapon melee = new MeleeWeapon(this, position.x + WIDTH / 2, position.y + HEIGHT / 2);
+    RangeWeapon range = new RangeWeapon(this, position.x + WIDTH / 2, position.y + HEIGHT / 2);
+    range.setWorld(world);
+
+    setMeleeWeapon(melee);
+    setRangeWeapon(range);
+    setMode(AttackMode.RANGE);
 
     Gdx.app.log(TAG, "Initialized Hero. HP=" + getHp() + "\tdamage=" + getDamage());
   }
@@ -76,9 +93,9 @@ public class Hero extends GameActor {
         level.setComplete(true);
         Gdx.app.log(TAG, "Reached goal");
       }
-      
-      if (!meleeWeapon.isSwinging()) {
-        setAttacking(false);
+
+      if (!meleeWeapon.isIdle() && !meleeWeapon.isSwinging()) {
+        weaponState = WeaponState.READY;
       }
     }
   }
@@ -169,8 +186,8 @@ public class Hero extends GameActor {
 
     // Update his current position
     moveBy(velocity.x, velocity.y);
-
     meleeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
+    rangeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
 
     // un-scale the velocity
     velocity.scl(1 / delta);
@@ -197,20 +214,22 @@ public class Hero extends GameActor {
     if (isJumping())
       idle();
   }
-  
+
   @Override
   public void setPosition(float x, float y) {
     super.setPosition(x, y);
     if (meleeWeapon != null)
       meleeWeapon.setPosition(x + WIDTH / 2, y + HEIGHT / 2);
   }
-  
-  /**
-   * Uses the melee weapon to attack
-   */
-  public void attack() {
-    attacking = true;
+
+  public void slash() {
+    weaponState = WeaponState.SLASHING;
     meleeWeapon.use();
+  }
+
+  public void fire() {
+    weaponState = WeaponState.FIRING;
+    rangeWeapon.use();
   }
 
   /**
@@ -225,14 +244,14 @@ public class Hero extends GameActor {
     remove();
     meleeWeapon.remove();
   }
-  
+
   /**
-   * Returns true if the current state of hero is ATTACKING
+   * Returns true if the hero is currently attacking
    * 
-   * @return true if the current state of hero is ATTACKING
+   * @return true if the hero is currently attacking
    */
-  public boolean isAttacking() {
-    return attacking;
+  public boolean isSlashing() {
+    return weaponState == WeaponState.SLASHING;
   }
 
   /**
@@ -353,10 +372,78 @@ public class Hero extends GameActor {
   }
 
   /**
-   * @param attacking the attacking to set
+   * @return the rangeWeapon
    */
-  public void setAttacking(boolean attacking) {
-    this.attacking = attacking;
+  public RangeWeapon getRangeWeapon() {
+    return rangeWeapon;
   }
-  
+
+  /**
+   * @param rangeWeapon the rangeWeapon to set
+   */
+  public void setRangeWeapon(RangeWeapon rangeWeapon) {
+    this.rangeWeapon = rangeWeapon;
+  }
+
+  /**
+   * Switches the weapons
+   */
+  public void switchWeapons() {
+    weaponState = WeaponState.SWITCHING;
+
+    if (mode == AttackMode.MELEE) {
+      setMode(AttackMode.RANGE);
+    } else if (mode == AttackMode.RANGE) {
+      setMode(AttackMode.MELEE);
+    }
+
+    Gdx.app.log(TAG, "Switched weapons. Mode " + mode);
+  }
+
+  public void stopFiring() {
+    weaponState = WeaponState.READY;
+    rangeWeapon.stopFiring();
+  }
+
+  /**
+   * @return the mode
+   */
+  public AttackMode getMode() {
+    return mode;
+  }
+
+  /**
+   * @param mode the mode to set
+   */
+  public void setMode(AttackMode mode) {
+    this.mode = mode;
+
+    if (mode == AttackMode.MELEE) {
+      meleeWeapon.draw();
+      rangeWeapon.cover();
+    } else if (mode == AttackMode.RANGE) {
+      meleeWeapon.cover();
+      rangeWeapon.draw();
+    }
+  }
+
+  public boolean isMeleeMode() {
+    return mode == AttackMode.MELEE;
+  }
+
+  public boolean isRangeMode() {
+    return mode == AttackMode.RANGE;
+  }
+
+  public boolean isSwitchingWeapons() {
+    return weaponState == WeaponState.SWITCHING;
+  }
+
+  public boolean isFiring() {
+    return weaponState == WeaponState.FIRING;
+  }
+
+  public void setWeaponReady() {
+    weaponState = WeaponState.READY;
+  }
 }

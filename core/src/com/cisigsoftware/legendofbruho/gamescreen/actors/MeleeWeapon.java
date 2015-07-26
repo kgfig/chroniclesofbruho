@@ -14,9 +14,9 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.base.Weapon;
 public class MeleeWeapon extends Weapon {
 
   private static final String TAG = MeleeWeapon.class.getSimpleName();
-  
+
   private enum State {
-    DRAWN, SWINGING
+    IDLE, DRAWN, SWINGING
   }
 
   private static float WIDTH = 1f;
@@ -24,15 +24,16 @@ public class MeleeWeapon extends Weapon {
   private static float DRAWN_ANGLE = 30;
 
   private State state;
+  private Hero hero;
 
-  public MeleeWeapon(float x, float y) {
-    super(x,y,WIDTH,HEIGHT);
-    setOrigin(0,0);
+  public MeleeWeapon(Hero hero, float x, float y) {
+    super(Type.MELEE, x, y, WIDTH, HEIGHT);
+    setOrigin(0, 0);
 
-    setState(State.DRAWN);
-    draw();
+    this.hero = hero;
+    cover();
   }
-  
+
   @Override
   public void act(float delta) {
     super.act(delta);
@@ -46,7 +47,7 @@ public class MeleeWeapon extends Weapon {
   @Override
   public void use() {
     Gdx.app.log(TAG, "Use weapon!");
-    
+
     if (isDrawn()) {
       swing();
       setState(State.SWINGING);
@@ -66,6 +67,15 @@ public class MeleeWeapon extends Weapon {
    */
   public void setState(State state) {
     this.state = state;
+  }
+
+  /**
+   * Returns true if the melee weapon is idle
+   * 
+   * @return true if the melee weapon is idle
+   */
+  public boolean isIdle() {
+    return getState() == State.IDLE;
   }
 
   /**
@@ -90,14 +100,24 @@ public class MeleeWeapon extends Weapon {
    * Draws the weapon from the sheath
    */
   public void draw() {
-    rotateBy(DRAWN_ANGLE);
+    setState(State.DRAWN);
+    addAction(Actions.sequence(Actions.show(), Actions.rotateTo(DRAWN_ANGLE)));
   }
 
   /**
    * Moves the weapon for a slash attack
    */
   public void swing() {
-    addAction(Actions.sequence(Actions.rotateTo(-30, 0.25f), Actions.rotateTo(30, 0.25f)));
+    addAction(Actions.sequence(Actions.rotateTo(-30, 0.25f), Actions.delay(0.02f, Actions.rotateTo(30, 0.25f))));
   }
 
+  public void cover() {
+    setState(State.IDLE);
+    addAction(Actions.sequence(Actions.rotateTo(-90, 0.1f), Actions.hide(), Actions.run(new Runnable() {
+      public void run() {
+        hero.setWeaponReady();
+      }
+    })));
+  }
+  
 }

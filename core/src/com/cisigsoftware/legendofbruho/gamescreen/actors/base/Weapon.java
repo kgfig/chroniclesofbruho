@@ -9,8 +9,15 @@ package com.cisigsoftware.legendofbruho.gamescreen.actors.base;
  */
 public abstract class Weapon extends BoundedActor {
 
-  public Weapon(float x, float y, float width, float height) {
+  protected enum Type {
+    MELEE, RANGE
+  }
+  
+  protected Type type;
+  
+  public Weapon(Type type, float x, float y, float width, float height) {
     super(x, y, width, height);
+    this.type = type;
   }
 
   public abstract void use();

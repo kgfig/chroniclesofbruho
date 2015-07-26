@@ -40,7 +40,7 @@ public class World extends Stage {
 
   private Controls controller;
   private long jumpingPressedTime;
-  private boolean jumpingPressed, attackPressed;
+  private boolean jumpingPressed;
   private ShapeRenderer shapeRenderer;
 
   public World() {
@@ -63,7 +63,7 @@ public class World extends Stage {
    * Creates the hero and assigns to enemies
    */
   private void createHero() {
-    hero = new Hero(new Vector2(1, WORLD_HEIGHT - 1));
+    hero = new Hero(this, new Vector2(1, WORLD_HEIGHT - 1));
     hero.setDebug(true);
   }
 
@@ -109,6 +109,7 @@ public class World extends Stage {
     heroPos = new Vector3(hero.getX(), WORLD_HEIGHT / 2, 0);
     addActor(hero);
     addActor(hero.getMeleeWeapon());
+    addActor(hero.getRangeWeapon());
   }
 
   public void clearWorld() {
@@ -141,6 +142,8 @@ public class World extends Stage {
       controller.jumpPressed();
     if (keyCode == Keys.A)
       controller.attackedPressed();
+    if (keyCode == Keys.D)
+      controller.switchPressed();
     return true;
 
   }
@@ -157,7 +160,11 @@ public class World extends Stage {
     }
     if (keyCode == Keys.A) {
       controller.attackedReleased();
-      attackPressed = false;
+      if (hero.isRangeMode())
+        hero.stopFiring();
+    }
+    if (keyCode == Keys.D) {
+      controller.switchReleased();
     }
     return true;
   }
@@ -165,6 +172,15 @@ public class World extends Stage {
   @Override
   public void act(float delta) {
     super.act(delta);
+
+    // Set camera to follow the hero's movement
+    if (hero.getX() + WORLD_HALF < currentLevel.getWidth() && hero.getX() - WORLD_HALF >= 0) {
+      heroPos.x = hero.getX();
+      camera.position.lerp(heroPos, 0.1f);
+    }
+
+    camera.update();
+
 
     // Show enemies on standby when they are within the camera's viewport
     for (Enemy enemy : enemies) {
@@ -212,30 +228,27 @@ public class World extends Stage {
       hero.stopWalking();
     }
 
-    if (controller.isAttackPressed()) {
+    if (controller.isSwitchPressed()) {
+      Gdx.app.log(TAG, "Pressed switch");
+      if (!hero.isSwitchingWeapons())
+        hero.switchWeapons();
+    } else if (controller.isAttackPressed()) {
       Gdx.app.log(TAG, "Pressed attack");
-      if (!hero.isAttacking()) {
-        Gdx.app.log(TAG, "Hero attacks!");
-        hero.attack();
-        attackPressed = true;
-      } else if (attackPressed) {
-        attackPressed = false;
+
+      if (hero.isMeleeMode() && !hero.isSlashing()) {
+        Gdx.app.log(TAG, "Slash attack!");
+        hero.slash();
+      } else if (hero.isRangeMode() && !hero.isFiring()) {
+        Gdx.app.log(TAG, "Fire!");
+        hero.fire();
       }
     }
+
   }
 
   @Override
   public void draw() {
     super.draw();
-
-    // Set camera to follow the hero's movement
-    if (hero.getX() + WORLD_HALF < currentLevel.getWidth() && hero.getX() - WORLD_HALF >= 0) {
-      heroPos.x = hero.getX();
-      camera.position.lerp(heroPos, 0.1f);
-    }
-
-    camera.update();
-
 
     // Check if bounds is correctly updated according to the actor's movement
     shapeRenderer.setProjectionMatrix(camera.combined);
@@ -249,6 +262,11 @@ public class World extends Stage {
       shapeRenderer.begin(ShapeType.Line);
       shapeRenderer.setColor(1, 1, 0, 1);
       shapeRenderer.polyline(hero.getMeleeWeapon().getBounds().getTransformedVertices());
+      shapeRenderer.end();
+
+      shapeRenderer.begin(ShapeType.Line);
+      shapeRenderer.setColor(1, 0, 1, 1);
+      shapeRenderer.polyline(hero.getRangeWeapon().getBounds().getTransformedVertices());
       shapeRenderer.end();
     }
 
