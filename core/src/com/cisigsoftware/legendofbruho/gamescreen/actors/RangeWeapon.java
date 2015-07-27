@@ -133,10 +133,12 @@ public class RangeWeapon extends Weapon {
   }
 
   public void cover() {
+    Gdx.app.log(TAG, "Cover RANGE weapon");
     setState(State.IDLE);
     addAction(Actions.sequence(Actions.rotateTo(-90, 0.1f), Actions.hide(), Actions.run(new Runnable() {
       public void run() {
         hero.setWeaponReady();
+        Gdx.app.log(TAG, "Hero done switching weapons!");
       }
     })));
   }

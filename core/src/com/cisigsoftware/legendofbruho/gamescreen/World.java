@@ -40,13 +40,17 @@ public class World extends Stage {
 
   private Controls controller;
   private long jumpingPressedTime;
-  private boolean jumpingPressed;
+  private boolean jumpingPressed, switchingPressed, attackPressed;
   private ShapeRenderer shapeRenderer;
 
   public World() {
     super();
     createCamera();
     shapeRenderer = new ShapeRenderer();
+    
+    jumpingPressed = false;
+    attackPressed = false;
+    jumpingPressedTime = 0;
   }
 
   public void create() {
@@ -138,11 +142,11 @@ public class World extends Stage {
       controller.leftPressed();
     if (keyCode == Keys.DPAD_RIGHT)
       controller.rightPressed();
-    if (keyCode == Keys.S)
+    if (keyCode == Keys.DPAD_UP)
       controller.jumpPressed();
     if (keyCode == Keys.A)
       controller.attackedPressed();
-    if (keyCode == Keys.D)
+    if (keyCode == Keys.S)
       controller.switchPressed();
     return true;
 
@@ -154,17 +158,20 @@ public class World extends Stage {
       controller.leftReleased();
     if (keyCode == Keys.DPAD_RIGHT)
       controller.rightReleased();
-    if (keyCode == Keys.S) {
+    if (keyCode == Keys.DPAD_UP) {
       controller.jumpReleased();
       jumpingPressed = false;
     }
     if (keyCode == Keys.A) {
       controller.attackedReleased();
+      attackPressed = false;
+      
       if (hero.isRangeMode())
         hero.stopFiring();
     }
-    if (keyCode == Keys.D) {
+    if (keyCode == Keys.S) {
       controller.switchReleased();
+      switchingPressed = false;
     }
     return true;
   }
@@ -230,14 +237,17 @@ public class World extends Stage {
 
     if (controller.isSwitchPressed()) {
       Gdx.app.log(TAG, "Pressed switch");
-      if (!hero.isSwitchingWeapons())
+      if (!hero.isSwitchingWeapons() && !switchingPressed) {
         hero.switchWeapons();
+        switchingPressed = true;
+      }
     } else if (controller.isAttackPressed()) {
       Gdx.app.log(TAG, "Pressed attack");
 
-      if (hero.isMeleeMode() && !hero.isSlashing()) {
+      if (hero.isMeleeMode() && !hero.isSlashing() && !attackPressed) {
         Gdx.app.log(TAG, "Slash attack!");
         hero.slash();
+        attackPressed = true;
       } else if (hero.isRangeMode() && !hero.isFiring()) {
         Gdx.app.log(TAG, "Fire!");
         hero.fire();

@@ -69,7 +69,7 @@ public class Hero extends GameActor {
 
     setMeleeWeapon(melee);
     setRangeWeapon(range);
-    setMode(AttackMode.RANGE);
+    setMode(AttackMode.MELEE);
 
     Gdx.app.log(TAG, "Initialized Hero. HP=" + getHp() + "\tdamage=" + getDamage());
   }
