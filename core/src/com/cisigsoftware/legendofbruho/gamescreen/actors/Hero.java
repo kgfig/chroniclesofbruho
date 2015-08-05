@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.cisigsoftware.legendofbruho.gamescreen.Level;
 import com.cisigsoftware.legendofbruho.gamescreen.World;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.GameActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.Weapon;
 
@@ -141,8 +142,8 @@ public class Hero extends GameActor {
     box.x = box.x + velocity.x;
 
     // If he collides, stop his x-velocity to 0
-    for (Block block : collidable) {
-      if (block != null && !block.isGoal() && block.collidesWith(box)) {
+    for (BoundedActor block : collidable) {
+      if (block != null && block.collidesWith(box)) {
         velocity.x = 0;
         break;
       }
@@ -172,8 +173,8 @@ public class Hero extends GameActor {
     box.y = box.y + velocity.y;
 
     // If he collides, set his y-velocity to 0 and set grounded to true
-    for (Block block : collidable) {
-      if (block != null && !block.isGoal() && block.collidesWith(box)) {
+    for (BoundedActor block : collidable) {
+      if (block != null && block.collidesWith(box)) {
         if (velocity.y < 0)
           setGrounded(true);
         velocity.y = 0;

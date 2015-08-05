@@ -4,6 +4,7 @@
 package com.cisigsoftware.legendofbruho.gamescreen.actors;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.PhysicsActor;
 
 /**
@@ -22,11 +23,11 @@ public class Bullet extends PhysicsActor {
 
     setGrounded(false);
   }
-  
+
   @Override
   public void act(float delta) {
     super.act(delta);
-    
+
     velocity.x = VX;
   }
 
@@ -61,9 +62,9 @@ public class Bullet extends PhysicsActor {
     box.x = box.x + velocity.x;
 
     // If he collides, stop his x-velocity to 0
-    for (Block block : collidable) {
+    for (BoundedActor block : collidable) {
       if (block != null && block.collidesWith(box)) {
-        velocity.x = 0;  
+        velocity.x = 0;
         remove();
         break;
       }
@@ -93,7 +94,7 @@ public class Bullet extends PhysicsActor {
     box.y = box.y + velocity.y;
 
     // If he collides, set his y-velocity to 0 and set grounded to true
-    for (Block block : collidable) {
+    for (BoundedActor block : collidable) {
       if (block != null && block.collidesWith(box)) {
         if (velocity.y < 0)
           setGrounded(true);
@@ -113,5 +114,5 @@ public class Bullet extends PhysicsActor {
     velocity.scl(1 / delta);
   }
 
-  
+
 }

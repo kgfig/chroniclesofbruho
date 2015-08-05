@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.cisigsoftware.legendofbruho.gamescreen.Level;
-import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 
 /**
  * @author kg
@@ -35,7 +34,7 @@ public abstract class PhysicsActor extends BoundedActor {
    */
   protected Level level;
   protected Pool<Rectangle> rectPool;
-  protected Array<Block> collidable;
+  protected Array<BoundedActor> collidable;
 
   /*
    * Movement control variables
@@ -101,7 +100,7 @@ public abstract class PhysicsActor extends BoundedActor {
     gravity = 0;
     maxVel = 0;
 
-    collidable = new Array<Block>();
+    collidable = new Array<BoundedActor>();
     rectPool = new Pool<Rectangle>() {
       @Override
       protected Rectangle newObject() {

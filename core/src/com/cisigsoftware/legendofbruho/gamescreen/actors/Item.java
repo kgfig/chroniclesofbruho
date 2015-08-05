@@ -30,7 +30,8 @@ public class Item extends BoundedActor {
   public void act(float delta) {
     super.act(delta);
 
-    if (user != null && this.collidesWith(user) && !unlocked) {
+    if (user != null && user.isSlashing() && this.collidesWith(user.getMeleeWeapon())
+        && !unlocked) {
       unlock();
       setUnlocked(true);
       // then if any item was unlocked during the level, show the popups after exit
@@ -43,6 +44,7 @@ public class Item extends BoundedActor {
   private void unlock() {
     level.getInstruction(instructionId).addAction(
         Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(2f, Actions.fadeOut(0.5f))));
+    level.removeCollidable((int) getX(), (int) getY());
     remove();
   }
 

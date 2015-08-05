@@ -14,6 +14,7 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Instruction;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Item;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.BarricadeEnemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.CrawlingEnemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes.TimedBombEnemy;
@@ -30,6 +31,7 @@ public class Level {
   private int width;
   private int height;
   private Block[][] blocks;
+  private BoundedActor[][] collidables;
   private Array<Enemy> enemies;
   private Map<Integer, Instruction> instructions;
   private Array<Item> items;
@@ -43,26 +45,31 @@ public class Level {
     width = matrix[0].length;
     height = matrix.length;
     blocks = new Block[width][height];
+    collidables = new BoundedActor[width][height];
     enemies = new Array<Enemy>();
     items = new Array<Item>();
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
+        collidables[x][y] = null;
         Gdx.app.log(TAG, "Create actor at position=(" + x + "," + y + ")");
 
         switch (matrix[height - 1 - y][x]) {
           case 1:
             blocks[x][y] = new Block(x, y);
+            collidables[x][y] = blocks[x][y];
             break;
           case 3:
-            Enemy enemy = new CrawlingEnemy(this, x, y);
-            enemies.add(enemy);
+            Enemy crawler = new CrawlingEnemy(this, x, y);
+            enemies.add(crawler);
             break;
           case 4:
             enemies.add(new TimedBombEnemy(this, x, y));
             break;
           case 5:
-            enemies.add(new BarricadeEnemy(this, x, y));
+            BarricadeEnemy barricade = new BarricadeEnemy(this, x, y);
+            enemies.add(barricade);
+            collidables[x][y] = barricade;
             break;
           case 99:
             blocks[x][y] = new Block(x, y);
@@ -72,6 +79,7 @@ public class Level {
             Item item = new Item(this, x, y);
             item.setInstructionId(11);
             items.add(item);
+            collidables[x][y] = item;
             break;
           default:
             blocks[x][y] = null;
@@ -136,6 +144,26 @@ public class Level {
   public Block getBlock(int col, int row) {
     return blocks[col][row];
   }
+  
+  /**
+   * Returns the collidable actor at the specified location
+   * 
+   * @param col x-coordinate
+   * @param row y-coordinate
+   * @return
+   */
+  public BoundedActor getCollidable(int col, int row) {
+    return collidables[col][row];
+  }
+  
+  /**
+   * Removes the collidable actor at the specified location 
+   * @param col
+   * @param row
+   */
+  public void removeCollidable(int col, int row) {
+    collidables[col][row] = null;
+  }
 
   /**
    * @return the enemies
@@ -170,7 +198,7 @@ public class Level {
    * @param endX right x
    * @param endY top y
    */
-  public Array<Block> getCollidableBlocks(Array<Block> collidable, int startX, int startY, int endX,
+  public Array<BoundedActor> getCollidableBlocks(Array<BoundedActor> collidable, int startX, int startY, int endX,
       int endY) {
     collidable.clear();
 
@@ -178,7 +206,7 @@ public class Level {
       for (int y = startY; y <= endY; y++) {
         // Add block to collidable list and just make sure that it's within the level bounds
         if (x >= 0 && x < getWidth() && y >= 0 && y < getHeight())
-          collidable.add(getBlock(x, y));
+          collidable.add(getCollidable(x, y));
       }
     }
 

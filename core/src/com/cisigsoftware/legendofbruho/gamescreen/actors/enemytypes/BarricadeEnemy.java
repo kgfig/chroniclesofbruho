@@ -5,9 +5,10 @@ package com.cisigsoftware.legendofbruho.gamescreen.actors.enemytypes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.cisigsoftware.legendofbruho.gamescreen.Level;
-import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
 
 /**
  * @author kg
@@ -23,8 +24,11 @@ public class BarricadeEnemy extends Enemy {
   private static final float MAX_HP = 5;
   private static final float DAMAGE = 5;
 
+  private Vector2 cellPosition;
+
   public BarricadeEnemy(Level level, float x, float y) {
-    super(Type.BARRICADE, x,y,SIZE,SIZE);
+    super(Type.BARRICADE, x, y, SIZE, SIZE);
+    cellPosition = new Vector2(x, y);
 
     setNearThreshold(0);
     setGrounded(true);
@@ -57,11 +61,11 @@ public class BarricadeEnemy extends Enemy {
         target.hurt(damage);
         Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
       }
-      
+
       if (target.isSlashing() && target.getMeleeWeapon().collidesWith(this)) {
-        Gdx.app.log(TAG, "Collided with weapon. Enemy hit by "+ target.getDamage() + " damage!");
+        Gdx.app.log(TAG, "Collided with weapon. Enemy hit by " + target.getDamage() + " damage!");
         this.hurt(target.getDamage());
-        
+
         if (!this.hasHp() && !this.isStateDying()) {
           Gdx.app.log(TAG, "Enemy died.");
           die();
@@ -74,7 +78,7 @@ public class BarricadeEnemy extends Enemy {
   protected void checkCollisionWithBlocks(float delta) {
     int startX, endX, startY, endY;
     Rectangle rectBounds = bounds.getBoundingRectangle();
-    
+
     // scale velocity to the frame
     velocity.scl(delta);
 
@@ -100,7 +104,7 @@ public class BarricadeEnemy extends Enemy {
     box.x = box.x + velocity.x;
 
     // If he collides, stop his x-velocity to 0
-    for (Block block : collidable) {
+    for (BoundedActor block : collidable) {
       if (block != null && block.collidesWith(box)) {
         velocity.x = 0;
         break;
@@ -131,7 +135,7 @@ public class BarricadeEnemy extends Enemy {
     box.y = box.y + velocity.y;
 
     // If he collides, set his y-velocity to 0 and set grounded to true
-    for (Block block : collidable) {
+    for (BoundedActor block : collidable) {
       if (block != null && block.collidesWith(box)) {
         if (velocity.y < 0)
           setGrounded(true);
@@ -149,9 +153,10 @@ public class BarricadeEnemy extends Enemy {
     // un-scale the velocity
     velocity.scl(1 / delta);
   }
-  
+
   private void die() {
     setState(State.DYING);
     remove();
+    level.removeCollidable((int) cellPosition.x, (int) cellPosition.y);
   }
 }

@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.cisigsoftware.legendofbruho.gamescreen.Level;
-import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
 
 /**
  * @author kg
@@ -110,7 +110,7 @@ public class TimedBombEnemy extends Enemy {
     box.x = box.x + velocity.x;
 
     // If he collides, stop his x-velocity to 0
-    for (Block block : collidable) {
+    for (BoundedActor block : collidable) {
       if (block != null && block.collidesWith(box)) {
         velocity.x = 0;
         break;
@@ -141,7 +141,7 @@ public class TimedBombEnemy extends Enemy {
     box.y = box.y + velocity.y;
 
     // If he collides, set his y-velocity to 0 and set grounded to true
-    for (Block block : collidable) {
+    for (BoundedActor block : collidable) {
       if (block != null && block.collidesWith(box)) {
         if (velocity.y < 0)
           setGrounded(true);
