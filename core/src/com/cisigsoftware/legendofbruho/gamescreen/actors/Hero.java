@@ -113,6 +113,19 @@ public class Hero extends GameActor {
   }
 
   @Override
+  protected void collideAlongX(float delta, boolean left) {
+    velocity.x = 0;
+  }
+
+  @Override
+  protected void collideAlongY(float delta, boolean top) {
+    if (velocity.y < 0)
+      setGrounded(true);
+    velocity.y = 0;
+  }
+
+
+  @Override
   protected void checkCollisionWithBlocks(float delta) {
     int startX, endX, startY, endY;
     Rectangle rectBounds = bounds.getBoundingRectangle();
@@ -187,8 +200,6 @@ public class Hero extends GameActor {
 
     // Update his current position
     moveBy(velocity.x, velocity.y);
-    meleeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
-    rangeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
 
     // un-scale the velocity
     velocity.scl(1 / delta);
@@ -221,6 +232,13 @@ public class Hero extends GameActor {
     super.setPosition(x, y);
     if (meleeWeapon != null)
       meleeWeapon.setPosition(x + WIDTH / 2, y + HEIGHT / 2);
+  }
+
+  @Override
+  public void moveBy(float dx, float dy) {
+    super.moveBy(dx, dy);
+    meleeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
+    rangeWeapon.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
   }
 
   public void slash() {
