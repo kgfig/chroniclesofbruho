@@ -82,7 +82,17 @@ public class CrawlingEnemy extends Enemy {
         target.hurt(damage);
         Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage. attacked?" + attacked);
       }
+
+      // Get hurt on collision with weapon
+      if (target.isSlashing() && target.getMeleeWeapon().collidesWith(this)) {
+        Gdx.app.log(TAG, "Collided with weapon. Enemy hit by " + target.getDamage() + " damage!");
+        this.hurt(target.getDamage());
+      }
       
+      if (!this.hasHp() && !this.isStateDying()) {
+        Gdx.app.log(TAG, "Enemy died.");
+        die();
+      }
     }
 
   }
@@ -104,6 +114,11 @@ public class CrawlingEnemy extends Enemy {
    */
   private void setCrawling(boolean crawling) {
     this.crawling = crawling;
+  }
+
+  private void die() {
+    setState(State.DYING);
+    remove();
   }
 
 }

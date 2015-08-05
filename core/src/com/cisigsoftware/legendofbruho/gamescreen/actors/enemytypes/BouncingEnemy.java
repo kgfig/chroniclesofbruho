@@ -93,6 +93,11 @@ public class BouncingEnemy extends Enemy {
           Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
         }
       }
+      
+      if (!this.hasHp() && !this.isStateDying()) {
+        Gdx.app.log(TAG, "Enemy died.");
+        die();
+      }
 
     }
   }
@@ -109,4 +114,8 @@ public class BouncingEnemy extends Enemy {
     velocity.y = 0;
   }
 
+  private void die() {
+    setState(State.DYING);
+    remove();
+  }
 }

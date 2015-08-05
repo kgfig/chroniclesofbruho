@@ -3,6 +3,7 @@
  */
 package com.cisigsoftware.legendofbruho.gamescreen.actors;
 
+import com.cisigsoftware.legendofbruho.gamescreen.Level;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.base.PhysicsActor;
 
 /**
@@ -15,11 +16,15 @@ public class Bullet extends PhysicsActor {
   private static final float HEIGHT = 0.25f;
 
   private static float VX = 12f;
+  
+  private float damage;
 
-  public Bullet(float x, float y) {
+  public Bullet(Level level, float x, float y, float damage) {
     super(x, y, WIDTH, HEIGHT);
 
     setGrounded(false);
+    setLevel(level);
+    setDamage(damage);
   }
 
   @Override
@@ -27,6 +32,12 @@ public class Bullet extends PhysicsActor {
     super.act(delta);
 
     velocity.x = VX;
+    
+    for (Enemy enemy : level.getEnemies()) {
+      if (this.collidesWith(enemy)) {
+        enemy.hurt(damage);
+      }
+    }
   }
   
   @Override
@@ -43,4 +54,19 @@ public class Bullet extends PhysicsActor {
     remove();
   }
 
+  /**
+   * @return the damage
+   */
+  public float getDamage() {
+    return damage;
+  }
+
+  /**
+   * @param damage the damage that can be dealt to the enemy
+   */
+  private void setDamage(float damage) {
+    this.damage = damage;
+  }
+
+  
 }

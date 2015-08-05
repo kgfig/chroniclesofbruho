@@ -48,26 +48,29 @@ public class BarricadeEnemy extends Enemy {
     acceleration.y = gravity;
 
     if (!level.isComplete()) {
+      
       // Unset attacked flag
       if (!target.isDying() && attacked && !this.collidesWith(target)) {
         setAttacked(false);
         Gdx.app.log(TAG, "Collided with target. Unset attacked " + attacked());
       }
 
+      // Set attacked and deal damage to target
       if (!target.isDying() && this.collidesWith(target) && !attacked) {
         setAttacked(true);
         target.hurt(damage);
         Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
       }
 
+      // Get hurt on collision with weapon
       if (target.isSlashing() && target.getMeleeWeapon().collidesWith(this)) {
         Gdx.app.log(TAG, "Collided with weapon. Enemy hit by " + target.getDamage() + " damage!");
         this.hurt(target.getDamage());
-
-        if (!this.hasHp() && !this.isStateDying()) {
-          Gdx.app.log(TAG, "Enemy died.");
-          die();
-        }
+      }
+      
+      if (!this.hasHp() && !this.isStateDying()) {
+        Gdx.app.log(TAG, "Enemy died.");
+        die();
       }
     }
   }

@@ -91,5 +91,4 @@ public abstract class GameActor extends PhysicsActor {
   public void setDamage(float damage) {
     this.damage = damage;
   }
-
 }

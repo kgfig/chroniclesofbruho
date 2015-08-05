@@ -29,7 +29,7 @@ public class World extends Stage {
   public static final float WORLD_HEIGHT = 9f;
   public static final float WORLD_HALF = WORLD_WIDTH / 2f;
 
-  private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 200ms
+  private static final long LONG_JUMP_PRESS = 150l; // cut off jump propulsion after 200ms
 
   OrthographicCamera camera;
   Level currentLevel;

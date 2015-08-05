@@ -26,8 +26,10 @@ public class TimedBombEnemy extends Enemy {
   private static final float NEAR_DISTANCE = 5.5f;
   private static final int COUNTDOWN_IN_SEC = 3;
 
-  private Action swellInPlace, explode;
-  private boolean swelling;
+//  private Action swellInPlace, explode;
+  private Action currentAction;
+  private Runnable explodeRunnable;
+  private boolean swelling, triggered;
 
   public TimedBombEnemy(Level level, float x, float y) {
     super(Type.BOMB, x, y, SIZE, SIZE);
@@ -42,6 +44,18 @@ public class TimedBombEnemy extends Enemy {
     setOrigin(SIZE / 2, 0);
     bounds.setOrigin(SIZE / 2, 0);
     setSwelling(false);
+    setTriggered(false);
+
+    explodeRunnable = new Runnable() {
+      public void run() {
+        removeAction(currentAction);
+        // show explosion animation
+        // shots bits
+        // Deal damage to the target on collision
+        Gdx.app.log(TAG, "Exploded!");
+        remove();
+      }
+    };
 
     Gdx.app.log(TAG,
         String.format("Created TimedBombEnemy with HP=%f\tDamage=%f.", getHp(), getDamage()));
@@ -75,14 +89,25 @@ public class TimedBombEnemy extends Enemy {
         target.hurt(damage);
         Gdx.app.log(TAG, "Collided with target. Attacked with " + getDamage() + " damage.");
       }
+
+      if (!target.isDying() && this.collidesWith(target.getMeleeWeapon()) && !triggered) {
+        setTriggered(true);
+        explode();
+        Gdx.app.log(TAG, "Collided with melee weapon. Explode!");
+      }
+
+      if (!this.hasHp() && !this.isStateDying()) {
+        Gdx.app.log(TAG, "Enemy died.");
+        die();
+      }
     }
   }
-  
+
   @Override
   protected void collideAlongX(float delta, boolean left) {
     velocity.x = 0;
   }
-  
+
   @Override
   protected void collideAlongY(float delta, boolean left) {
     if (velocity.y < 0)
@@ -101,9 +126,9 @@ public class TimedBombEnemy extends Enemy {
    * Adds the action for the enemy to swell in place
    */
   private void swellInPlace() {
-    swellInPlace = Actions.forever(
+    currentAction = Actions.forever(
         Actions.sequence(Actions.scaleBy(0.5f, 0.5f, 0.5f), Actions.scaleBy(-0.5f, -0.5f, 0.5f)));
-    addAction(swellInPlace);
+    addAction(currentAction);
   }
 
   /**
@@ -111,26 +136,39 @@ public class TimedBombEnemy extends Enemy {
    */
   private void swellToExplode() {
     // Remove previous actions
-    removeAction(swellInPlace);
-
-    // Create explosion action
-    Runnable explodeRunnable = new Runnable() {
-      public void run() {
-        removeAction(explode);
-        // show explosion animation
-        // shots bits
-        // Deal damage to the target on collision
-        Gdx.app.log(TAG, "Exploded!");
-        remove();
-      }
-    };
+    removeAction(currentAction);
 
     Action swellToExplode = Actions.repeat(COUNTDOWN_IN_SEC,
         Actions.sequence(Actions.scaleBy(0.65f, 0.65f, 0.5f), Actions.scaleBy(-0.5f, -0.5f, 0.5f)));
+    currentAction =
+        Actions.sequence(swellToExplode, Actions.run(new Runnable() {
+          public void run() {
+            setTriggered(true);
+          }
+        }), Actions.scaleBy(4, 4, 0.2f), Actions.run(explodeRunnable));
 
-    Action explode =
-        Actions.sequence(swellToExplode, Actions.scaleBy(4, 4, 0.2f), Actions.run(explodeRunnable));
-    addAction(explode);
+    addAction(currentAction);
   }
 
+  private void explode() {
+    // Create explosion action
+    if (currentAction!=null)
+      removeAction(currentAction);
+    
+    currentAction = Actions.sequence(Actions.scaleBy(4, 4, 0.2f), Actions.run(explodeRunnable));
+    addAction(currentAction);
+  }
+
+  private void die() {
+    setState(State.DYING);
+    remove();
+  }
+
+  /**
+   * @param exploded the exploded to set
+   */
+  public void setTriggered(boolean exploded) {
+    this.triggered = exploded;
+  }
+  
 }

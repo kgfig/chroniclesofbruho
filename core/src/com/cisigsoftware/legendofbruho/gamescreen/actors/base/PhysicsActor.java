@@ -222,6 +222,14 @@ public abstract class PhysicsActor extends BoundedActor {
   public void setLevel(Level level) {
     this.level = level;
   }
+  
+  /**
+   * @return the level
+   */
+  public Level getLevel() {
+    return level;
+  }
+
 
   /**
    * @param gravity the gravity to set

@@ -15,6 +15,8 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.base.Weapon;
 public class RangeWeapon extends Weapon {
 
   private static final String TAG = RangeWeapon.class.getSimpleName();
+  
+  private static final int DAMAGE = 5;
 
   private enum State {
     IDLE, DRAWN
@@ -54,7 +56,7 @@ public class RangeWeapon extends Weapon {
 
       if (fireDelay <= 0) {
         Gdx.app.log(TAG, "Fire a bullet");
-        Bullet bullet = new Bullet(getX() + getWidth(), getY());
+        Bullet bullet = new Bullet(hero.getLevel(), getX() + getWidth(), getY(), DAMAGE);
         bullet.setDebug(true);
         bullet.setLevel(world.getCurrentLevel());
         world.addActor(bullet);
