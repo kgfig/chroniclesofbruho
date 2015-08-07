@@ -11,6 +11,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Crate;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Instruction;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Item;
@@ -31,10 +32,11 @@ public class Level {
   private int width;
   private int height;
   private Block[][] blocks;
-  private BoundedActor[][] collidables;
   private Array<Enemy> enemies;
-  private Map<Integer, Instruction> instructions;
+  private Array<Crate> crates;
   private Array<Item> items;
+  private Map<Integer, Instruction> instructions;
+  private BoundedActor[][] collidables;
   private boolean complete;
 
   public Level(int[][] matrix, InstructionRecord[] instructionText) {
@@ -48,6 +50,7 @@ public class Level {
     collidables = new BoundedActor[width][height];
     enemies = new Array<Enemy>();
     items = new Array<Item>();
+    crates = new Array<Crate>();
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
@@ -75,11 +78,19 @@ public class Level {
             blocks[x][y] = new Block(x, y);
             blocks[x][y].setGoal(true);
             break;
-          case 100:
+          case 100: // Boxed Items
+            // Create item
             Item item = new Item(this, x, y);
             item.setInstructionId(11);
             items.add(item);
-            collidables[x][y] = item;
+            
+            // Put item inside a crate
+            Array<Item> crateItems =new Array<Item> ();
+            crateItems.add(item);
+            
+            Crate crate = new Crate(this, crateItems, x, y);
+            crates.add(crate);
+            collidables[x][y] = crate;
             break;
           default:
             blocks[x][y] = null;
@@ -179,6 +190,11 @@ public class Level {
     return instructions.values();
   }
 
+  /**
+   * 
+   * @param id
+   * @return the instruction with the given id
+   */
   public Instruction getInstruction(int id) {
     return instructions.get(id);
   }
@@ -188,6 +204,13 @@ public class Level {
    */
   public Array<Item> getItems() {
     return items;
+  }
+
+  /**
+   * @return the crates
+   */
+  public Array<Crate> getCrates() {
+    return crates;
   }
 
   /**
@@ -265,6 +288,10 @@ public class Level {
 
     for (Item item : items) {
       item.remove();
+    }
+    
+    for (Crate crate : crates) {
+      crate.remove();
     }
   }
 }

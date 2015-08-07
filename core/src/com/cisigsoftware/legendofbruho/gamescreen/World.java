@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Block;
+import com.cisigsoftware.legendofbruho.gamescreen.actors.Crate;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Enemy;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Hero;
 import com.cisigsoftware.legendofbruho.gamescreen.actors.Item;
@@ -29,7 +30,7 @@ public class World extends Stage {
   public static final float WORLD_HEIGHT = 9f;
   public static final float WORLD_HALF = WORLD_WIDTH / 2f;
 
-  private static final long LONG_JUMP_PRESS = 150l; // cut off jump propulsion after 200ms
+  private static final long LONG_JUMP_PRESS = 200l; // cut off jump propulsion after 200ms
 
   OrthographicCamera camera;
   Level currentLevel;
@@ -47,7 +48,7 @@ public class World extends Stage {
     super();
     createCamera();
     shapeRenderer = new ShapeRenderer();
-    
+
     jumpingPressed = false;
     attackPressed = false;
     jumpingPressedTime = 0;
@@ -88,7 +89,6 @@ public class World extends Stage {
 
     // Build the terrain
     Block[][] blocks = currentLevel.getBlocks();
-
     for (Block[] blockCol : blocks) {
       for (Block block : blockCol) {
         if (block != null) {
@@ -98,13 +98,20 @@ public class World extends Stage {
       }
     }
 
-    // Add the items
+    // Add items
     Array<Item> items = currentLevel.getItems();
-
     for (Item item : items) {
       item.setUser(hero);
       item.setDebug(true);
       addActor(item);
+    }
+    
+    // Add crates
+    Array<Crate> crates = currentLevel.getCrates();
+    for (Crate crate : crates) {
+      crate.setUser(hero);
+      crate.setDebug(true);
+      addActor(crate);
     }
 
     // Set the level for the hero
@@ -165,7 +172,7 @@ public class World extends Stage {
     if (keyCode == Keys.A) {
       controller.attackedReleased();
       attackPressed = false;
-      
+
       if (hero.isRangeMode())
         hero.stopFiring();
     }
@@ -260,7 +267,6 @@ public class World extends Stage {
   public void draw() {
     super.draw();
 
-    // Check if bounds is correctly updated according to the actor's movement
     shapeRenderer.setProjectionMatrix(camera.combined);
 
     if (hero.hasHp()) {
@@ -297,10 +303,19 @@ public class World extends Stage {
     shapeRenderer.end();
 
     for (Item item : currentLevel.getItems()) {
-      if (item != null && !item.isUnlocked()) {
+      if (item != null && !item.isPickedUp()) {
         shapeRenderer.begin(ShapeType.Line);
         shapeRenderer.setColor(0, 0, 1, 1);
         shapeRenderer.polyline(item.getBounds().getTransformedVertices());
+        shapeRenderer.end();
+      }
+    }
+    
+    for (Crate crate : currentLevel.getCrates()) {
+      if (crate != null && !crate.isOpen()) {
+        shapeRenderer.begin(ShapeType.Line);
+        shapeRenderer.setColor(0, 1, 1, 1);
+        shapeRenderer.polyline(crate.getBounds().getTransformedVertices());
         shapeRenderer.end();
       }
     }

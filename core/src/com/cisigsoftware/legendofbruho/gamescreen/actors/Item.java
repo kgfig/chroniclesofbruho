@@ -13,16 +13,21 @@ import com.cisigsoftware.legendofbruho.gamescreen.actors.base.BoundedActor;
  */
 public class Item extends BoundedActor {
 
-  private static float SIZE = 1;
+  private static float SIZE = 0.5f;
+  private static int NONE = -1;
 
   private Level level;
   private Hero user;
-  private boolean unlocked;
+  private boolean enabled;
+  private boolean pickedUp;
   private int instructionId;
 
   public Item(Level level, float x, float y) {
     super(x, y, SIZE, SIZE);
-    unlocked = false;
+
+    setInstructionId(NONE);
+    setPickedUp(false);
+    setEnabled(true);
     setLevel(level);
   }
 
@@ -30,21 +35,27 @@ public class Item extends BoundedActor {
   public void act(float delta) {
     super.act(delta);
 
-    if (user != null && user.isSlashing() && this.collidesWith(user.getMeleeWeapon())
-        && !unlocked) {
-      unlock();
-      setUnlocked(true);
-      // then if any item was unlocked during the level, show the popups after exit
+    if (enabled && user != null && this.collidesWith(user) && !pickedUp) {
+      pickUp();
+      // then if any item was picked up during the level, show the popups after exit
     }
   }
 
   /**
-   * Unlocks the item
+   * Notes that the item has been picked up, shows related instructions and removes it from the
+   * world
    */
-  private void unlock() {
-    level.getInstruction(instructionId).addAction(
-        Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(2f, Actions.fadeOut(0.5f))));
-    level.removeCollidable((int) getX(), (int) getY());
+  private void pickUp() {
+    // Note that this item has been picked up
+    setPickedUp(true);
+
+    // Show instructions when item is picked up
+    if (instructionId != NONE) {
+      level.getInstruction(instructionId).addAction(
+          Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(2f, Actions.fadeOut(0.5f))));
+    }
+
+    // Remove this item from the world
     remove();
   }
 
@@ -60,17 +71,31 @@ public class Item extends BoundedActor {
   /**
    * @return the unlocked
    */
-  public boolean isUnlocked() {
-    return unlocked;
+  public boolean isPickedUp() {
+    return pickedUp;
   }
 
   /**
-   * Sets unlocked flag
+   * Marks that the item has been picked up
    * 
-   * @param unlocked true if the item is unlocked
+   * @param pickedUp true if the item was picked up
    */
-  private void setUnlocked(boolean unlocked) {
-    this.unlocked = unlocked;
+  private void setPickedUp(boolean pickedUp) {
+    this.pickedUp = pickedUp;
+  }
+
+  /**
+   * @return enabled true if the item has been enabled
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  /**
+   * @param enabled true if the item has been enabled
+   */
+  public void setEnabled(boolean boxed) {
+    this.enabled = boxed;
   }
 
   /**

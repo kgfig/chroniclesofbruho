@@ -95,11 +95,11 @@ public class GameScreen implements Screen {
 //    levels.add(new Level(Constants.DEMO_LEVEL2, Constants.LVL2_INSTRUCTIONS));
 //    levels.add(new Level(Constants.DEMO_LEVEL3, Constants.LVL3_INSTRUCTIONS));
 //    levels.add(new Level(Constants.DEMO_LEVEL4, Constants.LVL4_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL5, Constants.LVL5_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL6, Constants.LVL6_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL7, Constants.LVL7_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL8, Constants.LVL8_INSTRUCTIONS));
-    levels.add(new Level(Constants.DEMO_LEVEL9, Constants.LVL9_INSTRUCTIONS));
+//    levels.add(new Level(Constants.DEMO_LEVEL5, Constants.LVL5_INSTRUCTIONS));
+//    levels.add(new Level(Constants.DEMO_LEVEL6, Constants.LVL6_INSTRUCTIONS));
+//    levels.add(new Level(Constants.DEMO_LEVEL7, Constants.LVL7_INSTRUCTIONS));
+//    levels.add(new Level(Constants.DEMO_LEVEL8, Constants.LVL8_INSTRUCTIONS));
+//    levels.add(new Level(Constants.DEMO_LEVEL9, Constants.LVL9_INSTRUCTIONS));
     levels.add(new Level(Constants.DEMO_LEVEL10, Constants.LVL10_INSTRUCTIONS));
   }
 
